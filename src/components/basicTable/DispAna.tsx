@@ -58,6 +58,8 @@ export default function DispAna({
             body: JSON.stringify({
                 area_states: selectedStates,
                 dispositions: selectedDisp,
+                area_exclude: isAreaStateActive,
+                disp_exclude: isDispositionActive
             }),
         })
         .then(response => response.json())
@@ -71,7 +73,7 @@ export default function DispAna({
     // Trigger API call on select change or pagination change
     useEffect(() => {
         fetchTableData();
-    }, [selectedStates, selectedDisp]);
+    }, [selectedStates, selectedDisp,isAreaStateActive, isDispositionActive]);
 
     // Calculate display data for pagination
     useEffect(() => {
