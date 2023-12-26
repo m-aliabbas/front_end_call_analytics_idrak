@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   TablePagination,
+  Chip
 } from "@mui/material";
 import { PieChart } from "react-minimal-pie-chart";
 import theme from "../../styles/theme";
@@ -210,7 +211,20 @@ export default function DispositionTable({
                 <TableCell>{callerId}</TableCell> 
                 <TableCell>{data.transcript[index]}</TableCell>
                 <TableCell>{data.disposition[index]}</TableCell>
-                <TableCell>{data.states[index].join(',')}</TableCell>
+                <TableCell>
+                  {data.states[index].map((state, idx) => (
+                    <Chip
+                      key={idx}
+                      label={state}
+                      variant="outlined"
+                      color="primary"
+                      size="small"
+                      style={{ margin: '3px', fontWeight: 'bold' }}
+                    />
+                  ))}
+                </TableCell>
+
+
               </TableRow>
             ))}
           </TableBody>
