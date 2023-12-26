@@ -1,0 +1,53 @@
+.nav-list {
+  .active{
+    background-color: #e01e26;
+    &:hover{
+      background-color: #e01e26;
+    }
+    .MuiListItemText-root .MuiTypography-root {
+      color: #fff;
+    }
+  }
+  .MuiListItemText-root .MuiTypography-root {
+    font-family: Roboto !important;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 14px;
+  }
+  .MuiListItemButton-root {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+  .MuiCollapse-wrapper .MuiListItemButton-root {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .progress-container {
+    background-color: #999999;
+    height: 2px;
+    width: 120px;
+  }
+  .progress-bar {
+    background-color: #e01e26;
+    height: 2px;
+  }
+  .divider {
+    height: 1.5px;
+    width: 100%;
+    background-color: #d9d9d9;
+    margin-top: 42px;
+    margin-bottom: 32px;
+  }
+  .sub-menu{
+    display: flex;
+    align-items: center;
+  }
+  // .sub-menu:before {
+  //   content: "\2022"; /* Unicode character for a bullet point */
+  //   color: #000; /* Color of the bullet point */
+  //   display: inline-block;
+  //   width: 15px; /* Size of the bullet point */
+  //   margin-right: 5px; /* Spacing between bullet point and text */
+  // }
+}

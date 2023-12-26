@@ -1,0 +1,276 @@
+.basic-table {
+  border-radius: unset !important;
+  box-shadow: unset !important;
+  .MuiTableHead-root {
+    height: 40px !important;
+  }
+  tr.MuiTableRow-head:not(.collapsible) {
+    background-color: #e01e26;
+    height: 40px !important;
+    th {
+      color: white;
+      font-family: "Roboto";
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      height: auto !important;
+      padding: 0px !important;
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+    }
+  }
+
+  &.outline-header{
+    tr.MuiTableRow-head:not(.collapsible) {
+      background-color: transparent;
+      border: 1px solid black !important;
+      th {
+        border-bottom: 0px solid;
+        color: black;
+      }
+    }
+  }
+
+  &.black-border {
+    tr {
+      border-bottom: 1px solid black !important;
+    }
+    td {
+      border-width: 0px !important;
+    }
+    tbody {
+      border: 1px solid black !important;
+      border-width: 0px 1px 0px 1px;
+    }
+  }
+}
+.heading{
+  font-weight: 700;
+  // text-align: center;
+  padding-bottom: 2%;
+  padding-top: 2%;
+  font-style: italic;
+  font-size: 24pt;
+}
+
+.out-div{
+  // background-color: #534747;
+  margin-bottom: 2%;
+  margin-top: 1%;
+  display: flex;
+  // padding-inline: 20%;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20%;
+}
+.box{
+  // background-color: #e01e26;
+  border: 1px #e01e26 solid ;
+  padding: 1% 4%;
+}
+.headding-d{
+  color: #e01e26;
+  font-size: 12pt;
+  font-weight: 500;
+  padding-right: 4px;
+}
+
+.one{
+// margin-top: 28%;
+scale: 1;
+height: 100% !important;
+
+}
+.badge {
+  display: flex;
+  background-color:rgb(255, 41, 41);
+  scale: 0.9;
+  font-size: 8pt;
+  color: rgb(255, 255, 255) !important;
+  margin-right: 2px !important;
+  padding: 5px !important;
+  border-radius: 4px !important;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  
+}
+.gg{
+  // background-color: aquamarine;
+padding: 10px;
+margin-bottom: 1% !important;
+// height: 30px !important;
+}
+.select-div{
+  // background-color: aqua;
+  margin-bottom: 14%;
+  margin-left: 1%;
+}
+
+
+// accordion section
+
+
+.accordion {
+    // border: 1px solid #ddd;
+    width: 100%;
+  }
+  
+.accordion-item {
+  // border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.accordion-item.active {
+  // background-color: #e01e26;
+}
+
+.accordion-title {
+  padding-top: 2px;
+  color: white;
+  font-size: 16pt !important;
+  // font-weight: 450;
+  background-color: #e01e26;
+  height: 40px !important;
+}
+
+.accordion-content {
+  padding: 10px;
+  border: none !important;
+}
+.accordion-arrow{
+  float: right;
+  font-size: 12pt;
+  padding-right: 10px;
+}
+
+
+// loading section
+
+
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+div.cl1 {
+  display: inline-block;
+  width: 14px;
+  border-radius: 50%;
+  height: 14px;
+  position: relative;
+  -webkit-animation: mymove 2s infinite; 
+  -webkit-animation-timing-function: linear; 
+  animation: mymove 2s infinite;
+  animation-timing-function: linear;
+}
+div.cl2 {
+  animation: mymove1 3s infinite !important;
+}
+div.cl3 {
+  animation: mymove2 4s infinite !important;
+}
+div.cl4 {
+  animation: mymove3 5s infinite !important;
+}
+
+@-webkit-keyframes mymove {
+  from {
+    left: 0%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: red;
+  }
+}
+
+@keyframes mymove {
+  from {
+    left: 0%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: red;
+  }
+}
+
+@-webkit-keyframes mymove1 {
+  from {
+    left: 0%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: green;
+  }
+}
+
+@keyframes mymove1 {
+  from {
+    left: 0%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: green;
+  }
+}
+
+@-webkit-keyframes mymove2 {
+  from {
+    left: 20%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: orange;
+  }
+}
+
+@keyframes mymove2 {
+  from {
+    left: 20%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: orange;
+  }
+}
+@-webkit-keyframes mymove3 {
+  from {
+    left: 10%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: blue;
+  }
+}
+
+@keyframes mymove3 {
+  from {
+    left: 10%;
+    background: white;
+  }
+  to {
+    left: 100%;
+    background: blue;
+  }
+}
+.loader_box {
+  width: 70%;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  margin:50px auto;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+.blink {
+  animation: blink 2s linear infinite;
+  font-family: 'Roboto', sans-serif;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
