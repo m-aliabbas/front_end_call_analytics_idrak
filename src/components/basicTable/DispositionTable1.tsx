@@ -31,7 +31,7 @@ export default function DispositionTable({
   const [states, setStates] = useState([]);
   const [selectedState, setSelectedState] = useState('all');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [rowsPerPage, setRowsPerPage] = useState(30);
   const [chartData, setChartData] = useState([]);
   const [additionalData, setAdditionalData] = useState({
     totalCalls: 0,
@@ -135,9 +135,16 @@ export default function DispositionTable({
 
   return (
     <>
-      <FormControl fullWidth>
-        <InputLabel id="state-select-label">State</InputLabel>
-        <Select
+       <div className="select-div">
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl
+              style={{
+                float: "left",
+                width: "20%",
+              }}
+            >
+              <InputLabel id="demo-simple-select-label">Select</InputLabel>
+              <Select
           labelId="state-select-label"
           id="state-select"
           value={selectedState}
@@ -148,25 +155,57 @@ export default function DispositionTable({
             <MenuItem key={index} value={state}>{state}</MenuItem>
           ))}
         </Select>
-      </FormControl>
+              
+            </FormControl>
+          </Box>
+        </div>
 
 
-      <div className="data-panels">
-        <div className="data-panel">
-          <h3>Total Calls</h3>
-          <p>{additionalData.totalCalls}</p>
+      <Typography
+            className="headline-medium"
+            // marginBottom="94px"
+            paddingLeft="4.5%"
+            color={theme.palette.primary.main}
+        >
+          Stats Counter
+      </Typography>
+      <div className="out-div">
+        <div className="box">
+          <span className="headding-d">Total Calls :</span>
+          <span>{additionalData.totalCalls}</span>
         </div>
-        <div className="data-panel">
-          <h3>Call Drops</h3>
-          <p>{additionalData.validCalls}</p>
+        <div className="box">
+          <span className="headding-d">Call Drop :</span>
+          <span>{additionalData.validCalls}</span>
         </div>
-        <div className="data-panel">
-          <h3>Valid Calls</h3>
-          <p>{additionalData.calculatedValidCalls}</p>
+        <div className="box">
+          <span className="headding-d">Valid Calls :</span>
+          <span>{additionalData.calculatedValidCalls}</span>
         </div>
       </div>
-
-
+      {/* Chart heading */}
+      <div>
+        
+      <Typography
+            className="headline-medium accordion-title"
+            // marginBottom="94px"
+            paddingLeft="4%"
+            // color={theme.palette.primary.main}
+          >
+        Graphical Representation
+          </Typography>
+      </div>
+      {/* chart code */}
+      <div
+          style={{
+            width: "100%",
+            height: 380,
+            padding: "60px",
+            paddingTop: "30px",
+            // borderBottom:"1px solid black",
+            // borderTop: "black 1px solid",
+          }}
+        >     
       {chartData.length > 0 && (
         <PieChart
           data={chartData}
@@ -178,10 +217,13 @@ export default function DispositionTable({
             fontFamily: 'Arial, sans-serif', // Optional: Set the font family if needed
           }}
           labelPosition={112} // Position labels outside the chart
-          radius={30} // Reduced chart radius
+          radius={42} // Reduced chart radius
+          lengthAngle={360}
         />
+        
       )}
-
+      </div>
+      {/* table data */}
       <TableContainer
         className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
         component={Paper}

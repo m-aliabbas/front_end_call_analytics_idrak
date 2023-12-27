@@ -13,6 +13,23 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import "./BasicTable.scss";
 import theme from "../../styles/theme";
+import {
+    Box,
+    Typography,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    TablePagination,
+    Chip
+  } from "@mui/material";
 
 export default function DispAna({
     className = "",
@@ -85,6 +102,9 @@ export default function DispAna({
 
             {/* Table Start */}
             <TableContainer
+                className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
+                component={Paper}
+        
                 {/* ... */}
             >
                 {/* ... */}
