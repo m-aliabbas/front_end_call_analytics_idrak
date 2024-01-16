@@ -6,6 +6,6 @@ Installation
 
 Credits:
 Mohammad Ali Abbas (SR ML ENGR | Team Lead ML)
-Anwaar shah (FrontEnd Developer)
+Anwaar shah (FrontEnd Developer).
 Danish Ali (AI Developer )
 Ali Murtaza (DevOp Engr)
