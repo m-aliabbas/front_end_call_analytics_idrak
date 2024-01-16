@@ -43,7 +43,7 @@ export default function ReusableTable({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const https = "http://localhost:8000"
+  const https = "http://65.109.229.64:9000"
 const[fullTranscript, setFullTranscript]= useState(null)
 
   useEffect(() => {

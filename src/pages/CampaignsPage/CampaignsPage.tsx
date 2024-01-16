@@ -14,7 +14,7 @@ import PauseIcon from "../../components/icons/pause";
 import PlusIcon from "../../components/icons/plus";
 import { PieChart } from "react-minimal-pie-chart";
 function CampaignsPage(): JSX.Element {
-  const https = "http://localhost:8000";
+  const https = "http://65.109.229.64:9000";
 
   // const [data, setData] = useState(null);
 

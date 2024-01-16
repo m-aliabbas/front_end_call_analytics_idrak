@@ -30,7 +30,7 @@ function ManagePublishers(): JSX.Element {
   ];
 
   const [formDataHook, setFormDataHook] = useState(null);
-  const https = "http://192.168.8.101:8081";
+  const https = "http://65.109.229.64:9000";
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [uploadStatus, setUploadStatus] = useState(
     "Please Click Upload File  .... "

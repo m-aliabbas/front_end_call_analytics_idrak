@@ -46,7 +46,7 @@ export default function DispAna({
     const [displayData, setDisplayData] = useState([]); // Data to display (paginated)
     const [page, setPage] = useState(0); // Current page
     const [rowsPerPage, setRowsPerPage] = useState(10); // Rows per page
-    const https = "http://localhost:8000";
+    const https = "http://65.109.229.64:9000";
 
     // Fetch area and disposition states
     useEffect(() => {

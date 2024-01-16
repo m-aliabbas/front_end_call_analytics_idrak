@@ -31,6 +31,7 @@ import ManageDNC from "./pages/Numbers/DNC/ManageDNC";
 import FullTranscript from "./pages/Publishers/PublishersGroup/FullTranscript";
 import SplittedTranscript from "./pages/Publishers/PublishersGroup/SplittedTranscript";
 import DispAna from "./components/basicTable/DispAna";
+import ClientsPanel from "./components/basicTable/ClientsPanel";
 // // Rtl Styles
 // import './styles/rtl.scss'
 // // Dark Mode Styles
@@ -87,6 +88,14 @@ function App(): JSX.Element {
         },
         {
           path: "/dispana",
+          element: (
+            <ProtectedRoute user={true}>
+              <ClientsPanel />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/dispana/:links/*",
           element: (
             <ProtectedRoute user={true}>
               <DispAna/>

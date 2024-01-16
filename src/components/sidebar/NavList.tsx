@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -6,22 +6,13 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ChevronDown from "../icons/chevronDown";
-import { useLocation, useNavigate } from "react-router-dom";
-import LogoutIcon from "../icons/logout";
-import SettingsIcon from "../icons/settings";
-import { Box, Button, Typography } from "@mui/material";
-import theme from "../../styles/theme";
-import CloudIcon from "../icons/cloud";
-import CommandCenterIcon from "../icons/commandCenter";
-import ReportingIcon from "../icons/reporting";
-import CampaignsIcon from "../icons/campaigns";
-import CallIcon from '@mui/icons-material/Call';
+import ReportingIcon from "@mui/icons-material/Dvr";
 import ArticleIcon from '@mui/icons-material/Article';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import TargetsIcon from "../icons/targets";
-import PublishersIcon from "../icons/publishers";
-import NumbersIcon from "../icons/numbers";
-import BillingsIcon from "../icons/billings";
+import CallIco from '@mui/icons-material/Call';
+import { useLocation, useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
+const https = "http://113.203.209.145:8011";
 
 function NavItemWithoutChildren({ text, link, isActive, setActive, Icon }) {
   return (
@@ -53,7 +44,6 @@ function NavItemWithCollapse({
       }}
       onClick={() => {
         setActive(link);
-        // setOpen(!isOpen);
       }}
       className={isActive ? "active" : ""}
     >
@@ -77,7 +67,6 @@ function NavItemWithCollapse({
           }}
         />
       )}
-      {/* <ChevronDown color={isActive ? "#fff" : undefined} /> */}
     </ListItemButton>
   );
 }
@@ -94,11 +83,11 @@ function SubMenu({ links, activeLink }) {
         }}
         disablePadding
       >
-        {links.map((link) => {
+        {links.map((link,index) => {
           return (
             <ListItemButton
               onClick={() => navigate(link.link)}
-              key={link.link}
+             key={index}
               sx={{ pl: 6 }}
             >
               <ListItemIcon
@@ -137,38 +126,62 @@ function SubMenu({ links, activeLink }) {
   );
 }
 
-export default function NavList() {
-  const [activeLink, setActiveLink] = React.useState("/");
+function NavList() {
+  const [activeLink, setActiveLink] = useState("/");
+  const [dispositionChildren, setDispositionChildren] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     setActiveLink(location.pathname);
-  }, []);
+  }, [location.pathname]);
+
 
   const handleItemClick = (link) => {
     setActiveLink(link);
     navigate(link);
   };
 
+
+  useEffect(() => {
+    const fetchDispositionChildren = async () => {
+      try {
+       const response = await fetch(https + '/get_client');
+const result = await response.json();
+// console.log("API Response:", result);
+
+  
+        // Check if the response has the expected structure
+        if (result?.data?.status && Array.isArray(result.data.data)) {
+          let temp_data = result.data.data;
+          let objectArray = temp_data.map(item => ({ 'link': 'dispana/'+item, 'text':item, }));
+          setDispositionChildren(objectArray);
+          console.log(typeof(dispositionChildren));
+          console.log("Updated State:", dispositionChildren); // Log to check state update
+        } else {
+          console.error("Invalid API response structure for disposition children");
+        }
+      } catch (error) {
+        console.error("Error fetching disposition children:", error);
+      }
+    };
+  
+    fetchDispositionChildren();
+  }, []);
+  
+  useEffect(() => {
+    console.log("Updated Disposition Children: ", dispositionChildren);
+  }, [dispositionChildren]);
+  
+
   const items = [
-    // {
-    //   text: "Home",
-    //   link: "/",
-    //   hasChildren: false,
-    //   icon: CommandCenterIcon,
-    // },
-
-
     {
       text: "Call Analytics",
       link: "/callanalytics",
       hasChildren: true,
-      icon: CallIcon,
+      icon: CallIco,
       childrenLinks: [
         { text: "Full Transcript", link: "/fulltranscript" },
-        // { text: "Sequence", link: "/publishers-group" },
-        // { text: "Splitted Transcript", link: "/splittedtranscript" },
       ],
     },
     {
@@ -186,12 +199,11 @@ export default function NavList() {
     {
       text: "Disposition",
       link: "/dispana",
-      hasChildren: false,
+      hasChildren: dispositionChildren.length > 0,
       icon: ReportingIcon,
+      childrenLinks: dispositionChildren, // dynamically add fetched children here
     },
   ];
-
- 
 
   return (
     <List
@@ -209,8 +221,8 @@ export default function NavList() {
               isActive={
                 activeLink === item.link ||
                 item.childrenLinks?.some(
-                  (e: any) =>
-                    location.pathname == e.link ||
+                  (e) =>
+                    location.pathname === e.link ||
                     location.pathname.includes(e.link + "/")
                 )
               }
@@ -220,12 +232,12 @@ export default function NavList() {
             />
             {(activeLink === item.link ||
               item.childrenLinks?.some(
-                (e: any) =>
-                  location.pathname == e.link ||
+                (e) =>
+                  location.pathname === e.link ||
                   location.pathname.includes(e.link + "/")
               )) && (
-                <SubMenu links={item.childrenLinks} activeLink={activeLink} />
-              )}
+              <SubMenu links={item.childrenLinks} activeLink={activeLink} />
+            )}
           </React.Fragment>
         ) : (
           <NavItemWithoutChildren
@@ -238,44 +250,8 @@ export default function NavList() {
           />
         )
       )}
-      <Box height="50px" />
-
-      {/* <Box className="divider" /> */}
-      {/* {itemsBottom.map((item) =>
-        item.hasChildren ? (
-          <React.Fragment key={item.link}>
-            <NavItemWithCollapse
-              text={item.text}
-              link={item.link}
-              isActive={
-                activeLink === item.link ||
-                item.childrenLinks?.some(
-                  (e: any) => location.pathname == e.link
-                )
-              }
-              setActive={handleItemClick}
-              isOpen={activeLink === item.link}
-              Icon={item.icon && item.icon}
-            />
-            {(activeLink === item.link ||
-              item.childrenLinks?.some(
-                (e: any) => location.pathname == e.link
-              )) && (
-                <SubMenu links={item.childrenLinks} activeLink={activeLink} />
-              )}
-          </React.Fragment>
-        ) : (
-          <NavItemWithoutChildren
-            key={item.text}
-            text={item.text}
-            link={item.link}
-            isActive={activeLink === item.link}
-            setActive={handleItemClick}
-            Icon={item.icon && item.icon}
-          />
-        )
-      )} */}
-      <Box height="500px" />
     </List>
   );
 }
+
+export default NavList;

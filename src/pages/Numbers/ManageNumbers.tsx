@@ -14,7 +14,7 @@ import SearchIcon from "../../components/icons/search";
 import { SingleSelect } from "../../components/dynamicDropdown/DynamicDropdown";
 import "./ManageNumber.scss"
 function ManageNumbers(): JSX.Element {
-  const https = "http://localhost:8000";
+  const https = "http://65.109.229.64:9000";
   const [openNumberModal, setOpenNumberModal] = useState<boolean>(false);
   const [selectedTab, setSelectedTab] = useState("one");
   const [state, setState] = useState(null);

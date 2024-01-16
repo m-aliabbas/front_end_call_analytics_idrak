@@ -12,8 +12,6 @@ import Paper from "@mui/material/Paper";
 import { classNames } from "../../utils";
 import TablePagination from "@mui/material/TablePagination";
 import { FlagIcon } from "../icons/flagIcon";
-
-// import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -66,8 +64,7 @@ export default function LogTable({
   };
 
   const all = rows.length;
-
-  const https = "http://localhost:8000";
+  const https = "http://65.109.229.64:9000";
   const [pharsesData, setpharsesData] = useState(null);
   const [wordData, setWordData] = useState(null);
   const [botData, setBotData] = useState(null);
@@ -93,12 +90,8 @@ export default function LogTable({
       });
   }, []);
   // console.log(state)
-
-
-
   // select section
 
-  
   const handleOnChangeSelect = (e) => {
     // console.log(e)
     const option = e.target.value;
@@ -119,7 +112,7 @@ export default function LogTable({
           error
         );
       });
-      fetch(https + "/get_word_freq/" + option)
+    fetch(https + "/get_word_freq/" + option)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -157,8 +150,6 @@ export default function LogTable({
       });
   }, []);
   // console.log(pharsesData);
-
-
   useEffect(() => {
     // Fetch data from API
     fetch(https + '/get_word_freq')
@@ -176,8 +167,6 @@ export default function LogTable({
       });
   }, []);
   // console.log(wordData)
-
-
   useEffect(() => {
     // Fetch data from API
     fetch(https + '/get_bot_hanged')
@@ -194,17 +183,13 @@ export default function LogTable({
         console.error('There has been a problem with your fetch operation: ', error);
       });
   }, []);
-  if(botData){
-
+  if (botData) {
     console.log(botData.data.length)
-  }else{
+  } else {
     console.log("hello")
   }
 
-
-
   const [age, setAge] = React.useState('');
-
   const handleChange = (event: SelectChangeEvent) => {
     // setAge(event.target.value as string);
     // console.log(event.target.value)
@@ -212,352 +197,335 @@ export default function LogTable({
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTerm1, setSearchTerm1] = useState("");
 
-
   return (
     <>
-  
-  <Box>
+      {state ?
+        <>
+          <Box>
+            <Typography
+              className="headline-medium"
+              marginBottom="25px"
+              color={theme.palette.primary.main}
+            >
+              Phrases frequency
+            </Typography>
+          </Box>
+          <div>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl
 
-<Typography
-        className="headline-medium"
-        marginBottom="25px"
-        color={theme.palette.primary.main}
-        >
-          Phrases frequency
-      </Typography>
-        </Box>
+                style={{
+                  float: "left",
+                  width: "20%",
+                  marginBottom: "1%",
+                }}>
+                <InputLabel id="demo-simple-select-label">Select</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={state.value}
+                  label="Selected"
+                  onChange={handleOnChangeSelect}
+                >
+                  {Object.entries(state.data)
+                    .map((item, key) => {
+                      return (
+                        <MenuItem value={item[1]}>{item[1]}</MenuItem>
+                      )
+                    })}
+                </Select>
+              </FormControl>
+            </Box>
+          </div>
 
-{ state ? 
+          {/* 1st table */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "end",
+              marginBottom: "10px",
+            }}
+          >
+            {/* search bar in html */}
+            {/* <SearchField placeholder="Search" /> */}
+            <input
+              style={{
+                padding: "10px",
+                fontSize: "14px",
+                borderRadius: "3px",
+                border: "1px #e01e26 solid",
+                // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
+                width: "38%",
+                outline: "none",
+              }}
+              type="text"
+              placeholder="Type a Keyword..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Box>
+        </>
+        :
+        <></>
+      }
 
-<div>
-<Box sx={{ minWidth: 120 }}>
-      <FormControl  
-     
-      style={{
-            float:"left",
-            width: "20%",
-            marginBottom:"1%",
-          }}>
-        <InputLabel id="demo-simple-select-label">Select</InputLabel> 
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={state.value}
-          label="Selected"
-          onChange={handleOnChangeSelect}
-        >
-          {/* <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem> */}
-          { Object.entries(state.data)
-                .map((item, key) => {
-              return (
-               <MenuItem value={item[1]}>{item[1]}</MenuItem>
-               )
-           })}
+      {pharsesData ?
+        <>
+          <TableContainer
+            className={classNames(
+              `basic-table`,
+              className,
+              blackBorder ? "black-border" : "",
+              outlineHeader ? "outline-header" : ""
+            )}
+            component={Paper}
+          >
+            {/* { pharsesData && ( */}
+            <Table
+              sx={{
+                ...(hideHeader && {
+                  thead: {
+                    display: "none !important",
+                  },
+                }),
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sr.</TableCell>
+                  <TableCell>Phrases</TableCell>
+                  <TableCell>States</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                {
+                  Object.entries(pharsesData.data)
+                    .filter(([phrase]) => phrase.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{(page - 1) * rowsPerPage + rowsPerPage + index + 1}</TableCell>
+                        <TableCell>{row[0]}</TableCell>
+                        <TableCell>{row[1]}</TableCell>
+                      </TableRow>
+                    ))
+                }
+              </TableBody>
+            </Table>
 
-          
-        </Select>
+            {/* Add TablePagination */}
+            {pharsesData && (
+              <TablePagination
+                rowsPerPageOptions={[
+                  5,
+                  10,
+                  25,
+                  Object.entries(pharsesData.data).length,
+                ]} // Set the available rows per page options
+                component="div"
+                count={Object.entries(pharsesData.data).length} // Total number of rows
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            )}
+          </TableContainer>
+        </>
+        :
+        <div className="loader_box">
+          <span className="blink">Loading...</span>
+          <div className="cl1"></div>
+          <div className="cl1 cl2"></div>
+          <div className="cl1 cl3"></div>
+          <div className="cl1 cl4"></div>
+        </div>
+      }
+      {/* 2nd table */}
+      {wordData ?
+        <>
+          <Box>
+            <Typography
+              className="headline-medium"
+              marginBottom="0px"
+              color={theme.palette.primary.main}
+            >
+              Words frequency
+            </Typography>
+          </Box>
 
-      </FormControl>
-    </Box>
-    </div>
-    : 
-    
-    <div className="loader_box">
-    <span className="blink">Loading...</span>
-    <div className="cl1"></div>
-    <div className="cl1 cl2"></div>
-    <div className="cl1 cl3"></div>
-    <div className="cl1 cl4"></div>
-  </div>
-    
-    }
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "end",
+              marginBottom: "10px",
+            }}
+          >
+            {/* search bar in html */}
+            {/* <SearchField placeholder="Search" /> */}
+            <input
+              style={{
+                padding: "10px",
+                fontSize: "14px",
+                borderRadius: "3px",
+                border: "1px #e01e26 solid",
+                // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
+                width: "30%",
+                outline: "none",
+              }}
+              type="text"
+              placeholder="Type a Keyword..."
+              value={searchTerm1}
+              onChange={(e) => setSearchTerm1(e.target.value)}
+            />
+          </Box>
 
+          <TableContainer
+            className={classNames(
+              `basic-table`,
+              className,
+              blackBorder ? "black-border" : "",
+              outlineHeader ? "outline-header" : ""
+            )}
+            component={Paper}
+          >
+            {/* { pharsesData && ( */}
 
-    {/* 1st table */}
- 
+            <Table
+              sx={{
+                ...(hideHeader && {
+                  thead: {
+                    display: "none !important",
+                  },
+                }),
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sr.</TableCell>
+                  <TableCell>Words</TableCell>
+                  <TableCell>States</TableCell>
+                </TableRow>
+              </TableHead>
 
+              <TableBody>
+                {/* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                {
+                  Object.entries(wordData.data)
+                    .filter(([phrase]) => phrase.toLowerCase().includes(searchTerm1.toLowerCase()))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{(page - 1) * rowsPerPage + rowsPerPage + index + 1}</TableCell>
+                        <TableCell>{row[0]}</TableCell>
+                        <TableCell>{row[1]}</TableCell>
+                      </TableRow>
+                    ))
+                }
+              </TableBody>
+            </Table>
 
-        <Box
-        sx={{
-          display: "flex",
-          justifyContent: "end",
-          marginBottom: "10px",
-        }}
-      >
-        {/* search bar in html */}
-        {/* <SearchField placeholder="Search" /> */}
+            {/* Add TablePagination */}
+            {wordData && (
+              <TablePagination
+                rowsPerPageOptions={[
+                  5,
+                  10,
+                  25,
+                  Object.entries(wordData.data).length,
+                ]} // Set the available rows per page options
+                component="div"
+                count={Object.entries(wordData.data).length} // Total number of rows
+                rowsPerPage={rowsPerPage1}
+                page={page1}
+                onPageChange={handleChangePage1}
+                onRowsPerPageChange={handleChangeRowsPerPage1}
+              />
+            )}
+          </TableContainer>
+        </>
+        :
+        <></>
+      }
 
-        <input
-          style={{
-            padding: "10px",
-            fontSize: "14px",
-            borderRadius: "3px",
-            border: "1px #e01e26 solid",
-            // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-            width: "35%",
-            outline: "none",
-          }}
-          type="text"
-          placeholder="Type a Keyword..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </Box>
+      {/* 3rd table */}
+      {botData ?
+        <>
+          <Box>
+            <Typography
+              className="headline-medium"
+              marginBottom="25px"
+              color={theme.palette.primary.main}
+            >
+              Bot Hanged Up
+            </Typography>
+          </Box>
 
-      <TableContainer
-        className={classNames(
-          `basic-table`,
-          className,
-          blackBorder ? "black-border" : "",
-          outlineHeader ? "outline-header" : ""
-        )}
-        component={Paper}
-      >
-        {/* { pharsesData && ( */}
+          <TableContainer
+            className={classNames(
+              `basic-table`,
+              className,
+              blackBorder ? "black-border" : "",
+              outlineHeader ? "outline-header" : ""
+            )}
+            component={Paper}
+          >
+            <Table
+              sx={{
+                ...(hideHeader && {
+                  thead: {
+                    display: "none !important",
+                  },
+                }),
+              }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>Sr.</TableCell>
+                  <TableCell>Text</TableCell>
+                  <TableCell>States</TableCell>
+                </TableRow>
+              </TableHead>
 
-        <Table
-          sx={{
-            ...(hideHeader && {
-              thead: {
-                display: "none !important",
-              },
-            }),
-          }}
-          aria-label="simple table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>Sr.</TableCell>
+              <TableBody>
+                {/* Render rows based on the current page and rowsPerPage */}
+                {(rowsPerPage2 > 0
+                  ? botData.data.slice(
+                    page2 * rowsPerPage2,
+                    page2 * rowsPerPage2 + rowsPerPage2
+                  )
+                  : rows
+                ).map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
+                    <TableCell>{row['AI bot got this data']}</TableCell>
+                    <TableCell>{row['Current State']}</TableCell>
 
-              <TableCell>Phrases</TableCell>
-              <TableCell>States</TableCell>
-            </TableRow>
-          </TableHead>
-          {pharsesData && (
-            <TableBody>
-              {/* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
-              {
-  Object.entries(pharsesData.data)
-    .filter(([phrase]) => phrase.toLowerCase().includes(searchTerm.toLowerCase()))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => (
-      <TableRow key={index}>
-        <TableCell>{(page-1) * rowsPerPage + rowsPerPage + index + 1}</TableCell>
-        <TableCell>{row[0]}</TableCell>
-        <TableCell>{row[1]}</TableCell>
-      </TableRow>
-    ))
-}
-            </TableBody>
-          )}
-        </Table>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-        {/* Add TablePagination */}
-        {pharsesData && (
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              25,
-              Object.entries(pharsesData.data).length,
-            ]} // Set the available rows per page options
-            component="div"
-            count={Object.entries(pharsesData.data).length} // Total number of rows
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        )}
-      </TableContainer>
+            {/* Add TablePagination */}
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, botData.data.length]} // Set the available rows per page options
+              component="div"
+              count={botData.data.length} // Total number of rows
+              rowsPerPage={rowsPerPage2}
+              page={page2}
+              onPageChange={handleChangePage2}
+              onRowsPerPageChange={handleChangeRowsPerPage2}
+            />
 
-{/* 2nd table */}
-<Box>
-
-<Typography
-        className="headline-medium"
-        marginBottom="25px"
-        color={theme.palette.primary.main}
-        >
-           Words frequency
-      </Typography>
-        </Box>
-
-        <Box
-        sx={{
-          display: "flex",
-          justifyContent: "end",
-          marginBottom: "10px",
-        }}
-      >
-        {/* search bar in html */}
-        {/* <SearchField placeholder="Search" /> */}
-
-        <input
-          style={{
-            padding: "10px",
-            fontSize: "14px",
-            borderRadius: "3px",
-            border: "1px #e01e26 solid",
-            // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-            width: "30%",
-            outline: "none",
-          }}
-          type="text"
-          placeholder="Type a Keyword..."
-          value={searchTerm1}
-          onChange={(e) => setSearchTerm1(e.target.value)}
-        />
-      </Box>
-
-
-       
-<TableContainer
-        className={classNames(
-          `basic-table`,
-          className,
-          blackBorder ? "black-border" : "",
-          outlineHeader ? "outline-header" : ""
-        )}
-        component={Paper}
-      >
-        {/* { pharsesData && ( */}
-
-        <Table
-          sx={{
-            ...(hideHeader && {
-              thead: {
-                display: "none !important",
-              },
-            }),
-          }}
-          aria-label="simple table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>Sr.</TableCell>
-
-              <TableCell>Words</TableCell>
-              <TableCell>States</TableCell>
-            </TableRow>
-          </TableHead>
-          {wordData && (
-            <TableBody>
-              {/* .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
-              {
-  Object.entries(wordData.data)
-    .filter(([phrase]) => phrase.toLowerCase().includes(searchTerm1.toLowerCase()))
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => (
-      <TableRow key={index}>
-        <TableCell>{(page-1) * rowsPerPage + rowsPerPage + index + 1}</TableCell>
-        <TableCell>{row[0]}</TableCell>
-        <TableCell>{row[1]}</TableCell>
-      </TableRow>
-    ))
-}
-            </TableBody>
-          )}
-        </Table>
-
-        {/* Add TablePagination */}
-        {wordData && (
-          <TablePagination
-            rowsPerPageOptions={[
-              5,
-              10,
-              25,
-              Object.entries(wordData.data).length,
-            ]} // Set the available rows per page options
-            component="div"
-            count={Object.entries(wordData.data).length} // Total number of rows
-            rowsPerPage={rowsPerPage1}
-            page={page1}
-            onPageChange={handleChangePage1}
-            onRowsPerPageChange={handleChangeRowsPerPage1}
-          />
-        )}
-      </TableContainer>
-      
-
-{/* 3rd table */}
-<Box>
-
-<Typography
-        className="headline-medium"
-        marginBottom="25px"
-        color={theme.palette.primary.main}
-        >
-         Bot Hanged Up
-      </Typography>
-        </Box>
-{ botData ? 
-      <TableContainer
-        className={classNames(
-          `basic-table`,
-          className,
-          blackBorder ? "black-border" : "",
-          outlineHeader ? "outline-header" : ""
-        )}
-        component={Paper}
-      >
-        <Table
-          sx={{
-            ...(hideHeader && {
-              thead: {
-                display: "none !important",
-              },
-            }),
-          }}
-          aria-label="simple table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>Sr.</TableCell>
-
-              <TableCell>Text</TableCell>
-              <TableCell>States</TableCell>
-
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {/* Render rows based on the current page and rowsPerPage */}
-            {(rowsPerPage2 > 0
-              ? botData.data.slice(
-                  page2 * rowsPerPage2,
-                  page2 * rowsPerPage2 + rowsPerPage2
-                )
-              : rows
-            ).map((row, index) => (
-              <TableRow key={index}>
-               <TableCell>{ index+1 }</TableCell>
-                <TableCell>{row['AI bot got this data']}</TableCell>
-                <TableCell>{row['Current State']}</TableCell>
-
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-        {/* Add TablePagination */}
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, botData.data.length]} // Set the available rows per page options
-          component="div"
-          count={botData.data.length} // Total number of rows
-          rowsPerPage={rowsPerPage2}
-          page={page2}
-          onPageChange={handleChangePage2}
-          onRowsPerPageChange={handleChangeRowsPerPage2}
-        />
-      </TableContainer>
-       : 
-       
-       console.log("")
-       
-       }
+          </TableContainer>
+        </>
+        :
+        <></>
+      }
     </>
   );
 }
@@ -570,12 +538,10 @@ export function ActionsCell({ align, actions }) {
         align == "left"
           ? "justify-start"
           : align == "center"
-          ? "justify-center"
-          : "justify-end"
+            ? "justify-center"
+            : "justify-end"
       )}
     >
-      {/* // <div className="relative flex justify-end min-w-[110px]"> */}
-      {/* <div className="absolute inset-4	 flex items-center justify-end"> */}
       {actions.map((action, index) => (
         <div key={index + action} onClick={action.onClick}>
           <React.Fragment>{action.icon}</React.Fragment>
@@ -602,8 +568,8 @@ function StatusIndicator({ align, status }) {
         align == "left"
           ? "justify-start"
           : align == "center"
-          ? "justify-center"
-          : "justify-end"
+            ? "justify-center"
+            : "justify-end"
       )}
     >
       <div

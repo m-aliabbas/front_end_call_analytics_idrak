@@ -42,7 +42,7 @@ export default function DispositionTable({
   useEffect(() => {
     const fetchStates = async () => {
       try {
-        const response = await fetch('http://localhost:8000/get_new_states');
+        const response = await fetch('http://65.109.229.64:9000/get_new_states');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -60,7 +60,7 @@ export default function DispositionTable({
     const fetchData = async () => {
       try {
         const startIndex = page * rowsPerPage;
-        const url = `http://localhost:8000/get_all_logs/${selectedState}?start_index=${startIndex}&num_rows=${rowsPerPage}`;
+        const url = `http://65.109.229.64:9000/get_all_logs/${selectedState}?start_index=${startIndex}&num_rows=${rowsPerPage}`;
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -78,7 +78,7 @@ export default function DispositionTable({
   useEffect(() => {
     const fetchChartData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/get_counter_data/${selectedState}`);
+        const response = await fetch(`http://65.109.229.64:9000/get_counter_data/${selectedState}`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

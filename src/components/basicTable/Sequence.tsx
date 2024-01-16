@@ -67,7 +67,7 @@ export default function Sequence({
 
   const all = rows.length;
 
-  const https = "http://localhost:8000";
+  const https = "http://65.109.229.64:9000";
   const [pharsesData, setpharsesData] = useState(null);
   const [wordData, setWordData] = useState(null);
   const [botData, setBotData] = useState(null);

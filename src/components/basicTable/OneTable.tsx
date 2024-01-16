@@ -28,7 +28,7 @@ export default function OneTable({
 
 //   table data
 
-  const https = "http://localhost:8000"
+  const https = "http://65.109.229.64:9000"
   const [fullData, setFullData] = useState(null);
 
   useEffect(() => {
