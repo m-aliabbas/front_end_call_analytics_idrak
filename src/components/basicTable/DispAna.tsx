@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Box, Typography, Button, TextField } from "@mui/material";
-import TablePagination from "@mui/material/TablePagination";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import {  Typography, Button, TextField } from "@mui/material";
+import { Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import TablePagination from '@mui/material/TablePagination';
 import Paper from "@mui/material/Paper";
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse'; // Import PapaParse for CSV parsing
 import { Select, MenuItem, InputLabel, FormControl, Chip, OutlinedInput } from '@mui/material';
-
+import CircularProgress from "@mui/material/CircularProgress";
 export default function DispAna({
     className = "",
     blackBorder = false,
@@ -28,12 +23,12 @@ export default function DispAna({
 }) {
 
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
-    const [numberOfChunks, setNumberOfChunks] = useState("");
-    const [numberOfIds, setNumberOfIds] = useState("");
+    const [numberOfChunks, setNumberOfChunks] = useState(0);
+    const [numberOfIds, setNumberOfIds] = useState(0);
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [clientName, setClientName] = useState("");
-    const [clientStates, setClientStates] = useState([]);
+    const [fileStates, setFileStates] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [campaignStates, setCampaignStates] = useState([]);
     const [selectedCampaign, setSelectedCampaign] = useState([]);
@@ -50,10 +45,11 @@ export default function DispAna({
     const [totalCount, setTotalCount] = useState(0); // Total count of rows
     const [isAreaStateActive, setIsAreaStateActive] = useState(false);
     const [isDispositionActive, setIsDispositionActive] = useState(false);
+    const [isFileActive, setIsFileActive] = useState(true);
     const https = "http://113.203.209.145:8011";
     const [menuOpen, setMenuOpen] = useState(false);
     const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(false);
 
     const [uploadedCSV, setUploadedCSV] = useState(null);
     const { links } = useParams();
@@ -82,8 +78,6 @@ export default function DispAna({
         // setClientInfo("");
     };
     // console.log('Type',typeof(med))
- 
-
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -123,24 +117,41 @@ export default function DispAna({
     };
 
     // Fetch area and disposition states
-    useEffect(() => {
-        // fetch(https + '/get_client')
-        //     .then(response => response.json())
-        //     .then(data => setClientStates(data.data.data))
-        //     .catch(error => console.error('Error:', error));
-        let data_to_send = {client_name:links}
-        fetch(https + '/get_file_client', {
+    let data_to_send = { client_name: links };
+
+    const fetchAndUpdateData = async () => {
+      try {
+        const response = await fetch(https + '/get_file_client', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(data_to_send),
-          })
-            .then(response => response.json())
-            .then(data => setClientStates(data.data.data))
-            .catch(error => console.error('Error:', error));
+        });
+        const data = await response.json();
+        
+        // Only update if the data is different to avoid unnecessary re-renders
+        if (JSON.stringify(fileStates) !== JSON.stringify(data.data.data)) {
+          setFileStates(data.data.data);
+          setSelectedFiles(data.data.data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchAndUpdateData(); // Initial fetch
+      const intervalId = setInterval(() => {
+        fetchAndUpdateData(); // Fetch data periodically
+      }, 100000); // Adjust the interval as needed
+  
+      return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    }, [fileStates]);
+    console.log("filedata",fileStates)
 
-            console.log('After post ap',clientStates)
+
+    useEffect(() => {
 
         fetch(https + '/get_area_states')
             .then(response => response.json())
@@ -159,8 +170,9 @@ export default function DispAna({
     }, []);
 
     const fetchTableData = () => {
+        setIsLoading(true);
         // Calculate start index based on current page and rows per page
-        const startIndex = page * rowsPerPage + 1; // Assuming page starts at 0
+        const startIndex = page * rowsPerPage; // Assuming page starts at 0
 
         const url = new URL(https + '/get_dispositions');
         url.searchParams.append('start_index', startIndex);
@@ -176,24 +188,32 @@ export default function DispAna({
                 dispositions: selectedDisp,
                 area_exclude: isAreaStateActive,
                 disp_exclude: isDispositionActive,
-                // med_name: selectedCampaign
-                med_name: selectedCampaign
+                file_exclude: isFileActive,
+                med_name: selectedCampaign,
+                file_ids: selectedFiles
             }),
         })
         .then(response => response.json())
         .then(data => {
             setTableData(data.data.data); // Update table data with response
             setTotalCount(data.totalCount); // Update total count if provided in response
-            })
-            .catch(error => console.error('Error fetching table data:', error));
+            setIsLoading(false);    
+            console.log("rows.................",data.data.data[0])
+        })
+            .catch(error => {
+                console.error('Error fetching table data:', error)
+                setIsLoading(false);
+        });
     };
     
     useEffect(() => {
         fetchTableData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive,selectedCampaign,]);
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive,isFileActive,selectedCampaign, selectedFiles]);
     console.log( "disp_name"+ selectedDisp)
     console.log( "campaign_name"+ selectedCampaign)
+    console.log("total_count", totalCount); 
 
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -272,7 +292,12 @@ export default function DispAna({
                 dispositions: selectedDisp,
                 area_exclude: isAreaStateActive,
                 disp_exclude: isDispositionActive,
-                med_name: selectedCampaign
+                med_name: selectedCampaign,
+                client_name: links,
+                file_exclude: isFileActive,
+                file_ids: selectedFiles,
+                chunk:numberOfChunks,
+                entity:numberOfIds
             }),
         })
             .then(response => response.blob()) // Handle response as a blob
@@ -319,7 +344,9 @@ export default function DispAna({
                 area_exclude: isAreaStateActive,
                 disp_exclude: isDispositionActive,
                 med_name: selectedCampaign,
-                client_name: links
+                client_name: links,
+                file_exclude: isFileActive,
+                file_ids: selectedFiles
             }),
         })
             .then(response => response.blob()) // Handle response as a blob
@@ -437,25 +464,27 @@ export default function DispAna({
                                     </Typography>
                                 </div>
                                 <ToastContainer />
-
-
                                 <Box sx={{ width: "100%", marginBottom: "14px" }}>
-                                    <Autocomplete
-                                        multiple
-                                        freeSolo
-                                        id="tags-outlined"
-                                        options={clientStates}
-                                        getOptionLabel={(option) => option}
-                                        filterSelectedOptions
-                                        value={selectedFiles}
-                                        onChange={(event, newValue) => {
-                                            setSelectedFiles(newValue);
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField {...params} label="Please Select File(s)" placeholder="Files" />
-                                        )}
-                                    />
-                                </Box>
+            <Autocomplete
+                multiple
+                freeSolo
+                id="tags-outlined"
+                options={fileStates}
+                getOptionLabel={(option) => option}
+                filterSelectedOptions
+                value={selectedFiles}
+                onChange={(event, newValue) => {
+                    setSelectedFiles(newValue);
+                }}
+                renderInput={(params) => (
+                    <TextField {...params} label="Please Select File(s)" placeholder="Files" />
+                )}
+            />
+            <FormControlLabel
+                control={<Switch checked={isFileActive} onChange={(e) => setIsFileActive(e.target.checked)} />}
+                label={isFileActive ? <p className='label'>Include Selected File(s)</p> : <p className='label'>Exclude Selected File(s)</p>}
+            />
+        </Box>
 
                                 <div>
                                     <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
@@ -465,8 +494,9 @@ export default function DispAna({
                                 <ToastContainer />
 
 
-                                <Box sx={{ width: "100%", marginBottom: "14px", maxHeight: "100px", overflow: "scrollbar" }}>
+                                <Box sx={{ width: "100%", marginBottom: "14px" }}>
                                     <Autocomplete
+                                    //   sx={{  marginBottom:"6px" }}
                                         multiple
                                         freeSolo // Allows free text input
                                         id="tags-outlined"
@@ -504,9 +534,8 @@ export default function DispAna({
 
                                     <div className='scv_button'>
                                         <FormControlLabel
-                                            className='lable'
                                             control={<Switch checked={isAreaStateActive} onChange={(e) => setIsAreaStateActive(e.target.checked)} />}
-                                            label={isAreaStateActive ? "Include Selected Area(s)" : "Exclude Selected Area(s)"}
+                                            label={isAreaStateActive ? <p className='label'>Include Selected Area(s)</p> : <p className='label'>Exclude Selected Area(s)</p>}
                                         />
 
                                         <div className="file-upload-container">
@@ -558,7 +587,7 @@ export default function DispAna({
                                     </Typography>
                                 </div>
                                 <ToastContainer />
-                                <Box sx={{ width: "100%", marginBottom: "14px" }}>
+                                <Box sx={{ width: "100%", marginBottom: "52px" }}>
                                     <Autocomplete
                                         multiple
                                         freeSolo
@@ -573,7 +602,8 @@ export default function DispAna({
                                         renderInput={(params) => (
                                             <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
                                         )}
-                                    />                                </Box>
+                                    />                              
+                                      </Box>
                                 <div>
                                     <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
                                         Dispositions
@@ -581,8 +611,9 @@ export default function DispAna({
                                 </div>
 
                                 <div className='f'>
-                                    <Box sx={{ width: "100%" }}>
+                                    <Box sx={{ width: "100%", marginBottom: "14px"  }}>
                                         <Autocomplete
+                                        //  sx={{  marginBottom:"6px" }}
                                             multiple
                                             freeSolo
                                             id="tags-outlined"
@@ -612,7 +643,7 @@ export default function DispAna({
                                         />
                                         <FormControlLabel
                                             control={<Switch checked={isDispositionActive} onChange={(e) => setIsDispositionActive(e.target.checked)} />}
-                                            label={isDispositionActive ? "Include Selected Disposition(s)" : "Exclude Selected Disposition(s)"}
+                                            label={isDispositionActive ? <p className='label'>Include Selected Disposition(s)</p> : <p className='label'>Exclude Selected Disposition(s)</p>}
                                         />
                                     </Box>
                                 </div>
@@ -620,7 +651,7 @@ export default function DispAna({
                         </div>
 
                         <div className='button_out_div'>
-                            <div className="f">
+                            {/* <div className="f">
                                 <Button
                                     type="button"
                                     variant="outlined"
@@ -646,13 +677,14 @@ export default function DispAna({
                                 >
                                     Download
                                 </Button>
-                            </div>
+                            </div> */}
 
                             <Button
                                 type="button"
                                 variant="outlined"
                                 className="title-medium"
                                 sx={{
+                                    marginBottom: "6px",
                                     width: "100%",
                                     padding: "8.5px 16px",
                                     textTransform: "none",
@@ -670,7 +702,7 @@ export default function DispAna({
                                 }}
                                 onClick={handleTagDownload}
                             >
-                                Add File & Download
+                              Download
                             </Button>
 
                             <Button
@@ -706,25 +738,27 @@ export default function DispAna({
 {isDownloadOpen && (
     <div className="popup">
         <div className="popup-content">
-            <Typography  sx={{ marginTop: "12px" }} variant="h6">No of Chunks</Typography>
+            <Typography  sx={{ marginTop: "12px",marginBottom:"4px" }} variant="h6">No of Chunks</Typography>
             <TextField
                 sx={{ marginBottom: "10px" }}
                 label="No of Chunks"
                 variant="outlined"
+                type="number"
                 fullWidth
                 value={numberOfChunks}
                 onChange={(e) => setNumberOfChunks(e.target.value)}
             />
-             <Typography variant="h6">No of IDs</Typography>
+             <Typography   sx={{ marginBottom:"4px" }} variant="h6">No of IDs</Typography>
             <TextField
                 sx={{ marginBottom: "14px" }}
                 label="No of IDs"
                 variant="outlined"
+                type="number"
                 fullWidth
                 value={numberOfIds}
                 onChange={(e) => setNumberOfIds(e.target.value)}
             />
-            <Button variant="outlined" fullWidth >
+            <Button variant="outlined" fullWidth    onClick={handleDownload}>
             Add File & Download
             </Button>
             <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
@@ -744,7 +778,8 @@ export default function DispAna({
                 <TableContainer
                     className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
                     component={Paper}
-                >
+                    >
+                       
                     <Box sx={{ display: "flex", justifyContent: "start", marginBottom: "10px", marginTop: "15px" }}>
                         <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
                             Disposition
@@ -758,6 +793,17 @@ export default function DispAna({
                                 <TableCell>Area State</TableCell>
                             </TableRow>
                         </TableHead>
+                        {isLoading ? (
+                            // Display a loading indicator while data is being fetched
+                            <TableRow>
+                            <TableCell colSpan={3} align="center">
+                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <CircularProgress />
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                        ) : (
+                        <>
                         <TableBody>
                             {tableData.map((row, index) => (
                                 <TableRow key={row._id.$oid}>
@@ -767,16 +813,20 @@ export default function DispAna({
                                 </TableRow>
                             ))}
                         </TableBody>
+                        </>
+                      )}
                     </Table>
                     <TablePagination
-                        rowsPerPageOptions={[20, 50, 100]}
-                        component="div"
-                        count={totalCount}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
+    rowsPerPageOptions={[20, 50, 100]}
+    component="div"
+    count={-1}  // This is where you specify the total number of rows
+    rowsPerPage={rowsPerPage}
+    page={page}
+    onPageChange={handleChangePage}
+    onRowsPerPageChange={handleChangeRowsPerPage}
+   
+/>
+
                 </TableContainer>
             </Box>
         </>

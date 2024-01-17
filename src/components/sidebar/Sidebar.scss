@@ -11,16 +11,16 @@
   .MuiListItemText-root .MuiTypography-root {
     font-family: Roboto !important;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 8px;
     line-height: 14px;
   }
   .MuiListItemButton-root {
-    padding-top: 16px !important;
-    padding-bottom: 16px !important;
+    padding-top: 8px ;
+    padding-bottom: 8px ;
   }
   .MuiCollapse-wrapper .MuiListItemButton-root {
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    padding-top: 2px;
+    padding-bottom: 2px ;
   }
 
   .progress-container {
@@ -43,11 +43,67 @@
     display: flex;
     align-items: center;
   }
-  // .sub-menu:before {
-  //   content: "\2022"; /* Unicode character for a bullet point */
-  //   color: #000; /* Color of the bullet point */
-  //   display: inline-block;
-  //   width: 15px; /* Size of the bullet point */
-  //   margin-right: 5px; /* Spacing between bullet point and text */
+
+}
+
+.custom-icon-size {
+  font-size: 6px !important; /* Example size, adjust as needed */
+}
+
+
+/* Responsive Styles */
+@media (min-width: 1038px) {
+  // .MuiListItemText-root .MuiTypography-root {
+  //   font-family: Roboto !important;
+  //   font-weight: 500;
+  //   font-size: 6px !important;
+  //   line-height: 14px;
   // }
+
+  // .MuiListItemButton-root {
+  //   padding-top: 12px !important;
+  //   padding-bottom: 12px !important;
+  // }
+  // .MuiCollapse-wrapper .MuiListItemButton-root {
+  //   padding-top: 4px !important;
+  //   padding-bottom: 4px !important;
+  // }
+ 
+}
+
+@media (min-width: 1198px) {
+  .MuiListItemText-root .MuiTypography-root {
+    font-family: Roboto !important;
+    font-weight: 500;
+    font-size: 12px !important;
+    line-height: 14px;
+  }
+
+  .MuiListItemButton-root {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .MuiCollapse-wrapper .MuiListItemButton-root {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+}
+
+
+@media (min-width: 1548px) {
+  .MuiListItemText-root .MuiTypography-root {
+    font-family: Roboto !important;
+    font-weight: 500;
+    font-size: 18px !important;
+    line-height: 14px;
+  }
+
+  .MuiListItemButton-root {
+    padding-top: 16px !important;
+    padding-bottom: 16px !important;
+  }
+  .MuiCollapse-wrapper .MuiListItemButton-root {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
 }

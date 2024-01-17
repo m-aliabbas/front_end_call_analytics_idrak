@@ -204,20 +204,20 @@ export default function LogTable({
           <Box>
             <Typography
               className="headline-medium"
-              marginBottom="25px"
+              marginBottom="18px"
               color={theme.palette.primary.main}
             >
               Phrases frequency
             </Typography>
           </Box>
-          <div>
-            <Box sx={{ minWidth: 120 }}>
+          <div className="ser-and-sel-div">
+            <Box className="ser-and-sel-div-box">
               <FormControl
-
                 style={{
-                  float: "left",
-                  width: "20%",
-                  marginBottom: "1%",
+                
+                  width: "100%", // Use a percentage to make it responsive
+                  maxWidth: "340px",
+                 
                 }}>
                 <InputLabel id="demo-simple-select-label">Select</InputLabel>
                 <Select
@@ -236,26 +236,22 @@ export default function LogTable({
                 </Select>
               </FormControl>
             </Box>
-          </div>
 
-          {/* 1st table */}
           <Box
+            className="ser-and-sel-div-box"
             sx={{
               display: "flex",
-              justifyContent: "end",
-              marginBottom: "10px",
             }}
           >
             {/* search bar in html */}
-            {/* <SearchField placeholder="Search" /> */}
             <input
               style={{
                 padding: "10px",
                 fontSize: "14px",
                 borderRadius: "3px",
                 border: "1px #e01e26 solid",
-                // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-                width: "38%",
+                width: "100%", // Use a percentage to make it responsive
+                maxWidth: "340px",
                 outline: "none",
               }}
               type="text"
@@ -264,11 +260,13 @@ export default function LogTable({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </Box>
+          </div>
         </>
         :
         <></>
       }
 
+ {/* 1st table */}
       {pharsesData ?
         <>
           <TableContainer
@@ -346,6 +344,7 @@ export default function LogTable({
       {/* 2nd table */}
       {wordData ?
         <>
+        <div className="nd-search-div">
           <Box>
             <Typography
               className="headline-medium"
@@ -357,6 +356,7 @@ export default function LogTable({
           </Box>
 
           <Box
+          className="nd-search-box"
             sx={{
               display: "flex",
               justifyContent: "end",
@@ -364,15 +364,13 @@ export default function LogTable({
             }}
           >
             {/* search bar in html */}
-            {/* <SearchField placeholder="Search" /> */}
             <input
               style={{
                 padding: "10px",
                 fontSize: "14px",
                 borderRadius: "3px",
                 border: "1px #e01e26 solid",
-                // boxShadow: "0 2px 5px rgba(0, 0, 0, 0.15)",
-                width: "30%",
+                width: "100%",
                 outline: "none",
               }}
               type="text"
@@ -381,7 +379,7 @@ export default function LogTable({
               onChange={(e) => setSearchTerm1(e.target.value)}
             />
           </Box>
-
+</div>
           <TableContainer
             className={classNames(
               `basic-table`,
@@ -457,7 +455,7 @@ export default function LogTable({
           <Box>
             <Typography
               className="headline-medium"
-              marginBottom="25px"
+              marginBottom="10px"
               color={theme.palette.primary.main}
             >
               Bot Hanged Up

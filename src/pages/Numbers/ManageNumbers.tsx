@@ -61,19 +61,12 @@ function ManageNumbers(): JSX.Element {
     // console.log(response);
   }
 
-
-
-
   const handleClick = (event) => {
     event.preventDefault();
     console.log('ac')
     sendFiles(formDataHook);
     setFormDataHook(null);
   };
-
-
-
-
 
   useEffect(() => {
     // Fetch data from API
@@ -206,22 +199,12 @@ function ManageNumbers(): JSX.Element {
           {/* search bar in html */}
           <Typography
             className="headline-medium"
-            marginBottom="5%"
+            marginBottom="22px"
             color={theme.palette.primary.main}
           >
             {/* heading */}
           </Typography>
-          {/* <SearchField placeholder="Search" /> */}
         </Box>
-
-        {/* input button */}
-
-
-
-
-
-
-        {/* input btn end */}
 
         {/* table component */}
 

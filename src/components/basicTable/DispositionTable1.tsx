@@ -135,57 +135,61 @@ export default function DispositionTable({
 
   return (
     <>
-       <div className="select-div">
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl
-              style={{
-                float: "left",
-                width: "20%",
-              }}
-            >
-              <InputLabel id="demo-simple-select-label">Select</InputLabel>
-              <Select
-          labelId="state-select-label"
-          id="state-select"
-          value={selectedState}
-          label="State"
-          onChange={handleStateChange}
-        >
-          {states.map((state, index) => (
-            <MenuItem key={index} value={state}>{state}</MenuItem>
-          ))}
-        </Select>
-              
-            </FormControl>
-          </Box>
-        </div>
+     <div className="select-div">
+  <Box>
+    <FormControl
+      style={{
+        float: "left",
+        width: "100%", // Use a percentage to make it responsive
+        maxWidth: "340px", // Set a maximum width to prevent it from getting too wide
+      }}
+    >
+      <InputLabel id="demo-simple-select-label">Select</InputLabel>
+      <Select
+        labelId="state-select-label"
+        id="state-select"
+        value={selectedState}
+        label="State"
+        onChange={handleStateChange}
+      >
+        {states.map((state, index) => (
+          <MenuItem key={index} value={state}>
+            {state}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Box>
+</div>
+
+<div>
+<Typography
+  className="headline-medium"
+  paddingLeft="14px"
+  color={theme.palette.primary.main}
+>
+  Stats Counter
+</Typography>
+<div className="out-div">
+  <div className="box">
+    <span className="headding-d">Total Calls :</span>
+    <span>{additionalData.totalCalls}</span>
+  </div>
+  <div className="box">
+    <span className="headding-d">Call Drop :</span>
+    <span>{additionalData.validCalls}</span>
+  </div>
+  <div className="box">
+    <span className="headding-d">Valid Calls :</span>
+    <span>{additionalData.calculatedValidCalls}</span>
+  </div>
+</div>
+  </div>
 
 
-      <Typography
-            className="headline-medium"
-            // marginBottom="94px"
-            paddingLeft="4.5%"
-            color={theme.palette.primary.main}
-        >
-          Stats Counter
-      </Typography>
-      <div className="out-div">
-        <div className="box">
-          <span className="headding-d">Total Calls :</span>
-          <span>{additionalData.totalCalls}</span>
-        </div>
-        <div className="box">
-          <span className="headding-d">Call Drop :</span>
-          <span>{additionalData.validCalls}</span>
-        </div>
-        <div className="box">
-          <span className="headding-d">Valid Calls :</span>
-          <span>{additionalData.calculatedValidCalls}</span>
-        </div>
-      </div>
+
       {/* Chart heading */}
-      <div>
-        
+      <div>   
       <Typography
             className="headline-medium accordion-title"
             // marginBottom="94px"
@@ -196,15 +200,13 @@ export default function DispositionTable({
           </Typography>
       </div>
       {/* chart code */}
-      <div
-          style={{
-            width: "100%",
-            height: 380,
-            padding: "60px",
-            paddingTop: "30px",
-            // borderBottom:"1px solid black",
-            // borderTop: "black 1px solid",
-          }}
+      <div className="chart-out"
+          // style={{
+          //   width: "100%",
+          //   height: "780px",
+          //   padding: "60px",
+          //   paddingTop: "30px",
+          // }}
         >     
       {chartData.length > 0 && (
         <PieChart
@@ -228,10 +230,9 @@ export default function DispositionTable({
         className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
         component={Paper}
       >
-        <Box sx={{ display: "flex", justifyContent: "end", marginBottom: "10px" }}>
+        <Box sx={{ display: "flex", marginBottom: "10px" }}>
           <Typography
             className="headline-medium"
-            paddingRight="47%"
             color={theme.palette.primary.main}
           >
             Disposition Table
