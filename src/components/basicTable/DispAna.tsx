@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
-import {  Typography, Button, TextField } from "@mui/material";
+import { Typography, Button, TextField } from "@mui/material";
 import { Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 import TablePagination from '@mui/material/TablePagination';
 import Paper from "@mui/material/Paper";
@@ -71,7 +71,7 @@ export default function DispAna({
     const openDownloadPop = () => {
         setIsDownloadOpen(true);
     };
-    
+
     const closeDownloadPop = () => {
         setIsDownloadOpen(false);
         setClientName("");
@@ -120,35 +120,35 @@ export default function DispAna({
     let data_to_send = { client_name: links };
 
     const fetchAndUpdateData = async () => {
-      try {
-        const response = await fetch(https + '/get_file_client', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data_to_send),
-        });
-        const data = await response.json();
-        
-        // Only update if the data is different to avoid unnecessary re-renders
-        if (JSON.stringify(fileStates) !== JSON.stringify(data.data.data)) {
-          setFileStates(data.data.data);
-          setSelectedFiles(data.data.data);
+        try {
+            const response = await fetch(https + '/get_file_client', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data_to_send),
+            });
+            const data = await response.json();
+
+            // Only update if the data is different to avoid unnecessary re-renders
+            if (JSON.stringify(fileStates) !== JSON.stringify(data.data.data)) {
+                setFileStates(data.data.data);
+                setSelectedFiles(data.data.data);
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
-      } catch (error) {
-        console.error('Error:', error);
-      }
     };
-  
+
     useEffect(() => {
-      fetchAndUpdateData(); // Initial fetch
-      const intervalId = setInterval(() => {
-        fetchAndUpdateData(); // Fetch data periodically
-      }, 100000); // Adjust the interval as needed
-  
-      return () => clearInterval(intervalId); // Cleanup interval on component unmount
+        fetchAndUpdateData(); // Initial fetch
+        const intervalId = setInterval(() => {
+            fetchAndUpdateData(); // Fetch data periodically
+        }, 100000); // Adjust the interval as needed
+
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
     }, [fileStates]);
-    console.log("filedata",fileStates)
+    console.log("filedata", fileStates)
 
 
     useEffect(() => {
@@ -193,27 +193,27 @@ export default function DispAna({
                 file_ids: selectedFiles
             }),
         })
-        .then(response => response.json())
-        .then(data => {
-            setTableData(data.data.data); // Update table data with response
-            setTotalCount(data.totalCount); // Update total count if provided in response
-            setIsLoading(false);    
-            console.log("rows.................",data.data.data[0])
-        })
+            .then(response => response.json())
+            .then(data => {
+                setTableData(data.data.data); // Update table data with response
+                setTotalCount(data.totalCount); // Update total count if provided in response
+                setIsLoading(false);
+                console.log("rows.................", data.data.data[0])
+            })
             .catch(error => {
                 console.error('Error fetching table data:', error)
                 setIsLoading(false);
-        });
+            });
     };
-    
+
     useEffect(() => {
         fetchTableData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive,isFileActive,selectedCampaign, selectedFiles]);
-    console.log( "disp_name"+ selectedDisp)
-    console.log( "campaign_name"+ selectedCampaign)
-    console.log("total_count", totalCount); 
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles]);
+    console.log("disp_name" + selectedDisp)
+    console.log("campaign_name" + selectedCampaign)
+    console.log("total_count", totalCount);
 
-    
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -276,9 +276,9 @@ export default function DispAna({
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
-      
+
         return `${year}${month}${day}_${hours}${minutes}${seconds}`;
-      }
+    }
 
     // Function to handle the API call for downloading dispositions
     const handleDownload = () => {
@@ -296,8 +296,8 @@ export default function DispAna({
                 client_name: links,
                 file_exclude: isFileActive,
                 file_ids: selectedFiles,
-                chunk:numberOfChunks,
-                entity:numberOfIds
+                chunk: numberOfChunks,
+                entity: numberOfIds
             }),
         })
             .then(response => response.blob()) // Handle response as a blob
@@ -385,37 +385,37 @@ export default function DispAna({
     return (
         <>
             <Box className="px-6 py-8">
-            <div className='heading_out' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-  <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
-    {links}
-  </Typography>
-  
-  <div style={{ display: 'flex', alignItems: 'center' }}>
-    <Button
-      type="button"
-      variant="outlined"
-      className="title-medium"
-      sx={{
-        width: "160px",
-        padding: "8.5px 16px",
-        textTransform: "none",
-        border: "1px solid #E01E26",
-        color: "#E01E26",
-        borderRadius: "5px",
-        "&:hover": {
-          color: "#fff",
-          backgroundColor: "var(--redColor)",
-          "& svg": {
-            fill: "#fff",
-          },
-        },
-      }}
-      onClick={openPopup}
-    >
-      Add Client
-    </Button>
-  </div>
-</div>
+                <div className='heading_out' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
+                        {links}
+                    </Typography>
+
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Button
+                            type="button"
+                            variant="outlined"
+                            className="title-medium"
+                            sx={{
+                                width: "160px",
+                                padding: "8.5px 16px",
+                                textTransform: "none",
+                                border: "1px solid #E01E26",
+                                color: "#E01E26",
+                                borderRadius: "5px",
+                                "&:hover": {
+                                    color: "#fff",
+                                    backgroundColor: "var(--redColor)",
+                                    "& svg": {
+                                        fill: "#fff",
+                                    },
+                                },
+                            }}
+                            onClick={openPopup}
+                        >
+                            Add Client
+                        </Button>
+                    </div>
+                </div>
 
 
                 {/* Overlay */}
@@ -434,14 +434,7 @@ export default function DispAna({
                                 value={clientName}
                                 onChange={(e) => setClientName(e.target.value)}
                             />
-                            {/* <TextField
-                                sx={{ marginBottom: "14px" }}
-                                label="Client Info"
-                                variant="outlined"
-                                fullWidth
-                                value={clientInfo}
-                                onChange={(e) => setClientInfo(e.target.value)}
-                            /> */}
+
                             <Button variant="outlined" fullWidth onClick={handleAddClient}>
                                 Add
                             </Button>
@@ -452,324 +445,332 @@ export default function DispAna({
                     </div>
                 )}
 
+
+
+
+
+
+
+
+
                 <div className="form-container mt-3">
                     <div className='filters_divs'>
 
                         <div className='filters_div'>
                             {/* left side */}
-                            <div className='leftside_div'>
-                                <div>
-                                    <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
-                                        Files
-                                    </Typography>
-                                </div>
-                                <ToastContainer />
-                                <Box sx={{ width: "100%", marginBottom: "14px" }}>
-            <Autocomplete
-                multiple
-                freeSolo
-                id="tags-outlined"
-                options={fileStates}
-                getOptionLabel={(option) => option}
-                filterSelectedOptions
-                value={selectedFiles}
-                onChange={(event, newValue) => {
-                    setSelectedFiles(newValue);
-                }}
-                renderInput={(params) => (
-                    <TextField {...params} label="Please Select File(s)" placeholder="Files" />
-                )}
-            />
-            <FormControlLabel
-                control={<Switch checked={isFileActive} onChange={(e) => setIsFileActive(e.target.checked)} />}
-                label={isFileActive ? <p className='label'>Include Selected File(s)</p> : <p className='label'>Exclude Selected File(s)</p>}
-            />
-        </Box>
-
-                                <div>
-                                    <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
-                                        Areas
-                                    </Typography>
-                                </div>
-                                <ToastContainer />
-
-
-                                <Box sx={{ width: "100%", marginBottom: "14px" }}>
-                                    <Autocomplete
-                                    //   sx={{  marginBottom:"6px" }}
-                                        multiple
-                                        freeSolo // Allows free text input
-                                        id="tags-outlined"
-                                        options={areaStates}
-                                        getOptionLabel={(option) => option}
-                                        filterSelectedOptions
-                                        value={selectedStates}
-                                        onChange={(event, newValue) => {
-                                            // Handle both existing options and new entries
-                                            if (typeof newValue === 'string') {
-                                                setSelectedStates([...selectedStates, newValue]);
-                                            } else if (Array.isArray(newValue)) {
-                                                setSelectedStates(newValue);
-                                            } else if (newValue === null) {
-                                                // Clear the selected options when clicking the close button
-                                                setSelectedStates([]);
-                                            }
-                                        }}
-                                        open={areaMenuOpen}
-                                        onBlur={() => setAreaMenuOpen(false)}
-                                        onClose={() => setAreaMenuOpen(true)} // Close the dropdown
-                                        onOpen={() => setAreaMenuOpen(true)} 
-                                        renderInput={(params) => (
-                                            <TextField {...params} label="Please Select Area(s)" placeholder="Areas" 
-                                            onClick={(event) => {
-                                                event.stopPropagation();
-                                                setAreaMenuOpen(true);
-                                            }}
-                                            />
-                                        )}
-                                        clearOnBlur={false} // Set this prop to false
-                                        disableCloseOnSelect={false} // Set this prop to false
-                                    />
-
-
-                                    <div className='scv_button'>
-                                        <FormControlLabel
-                                            control={<Switch checked={isAreaStateActive} onChange={(e) => setIsAreaStateActive(e.target.checked)} />}
-                                            label={isAreaStateActive ? <p className='label'>Include Selected Area(s)</p> : <p className='label'>Exclude Selected Area(s)</p>}
-                                        />
-
-                                        <div className="file-upload-container">
-                                            <input
-                                                type="file"
-                                                accept=".csv"
-                                                onChange={handleFileUpload}
-                                                style={{ display: 'none' }}
-                                                id="file-input"
-                                            />
-                                            <label htmlFor="file-input">
-                                                <Button
-
-                                                    variant="outlined"
-                                                    className="title-medium"
-                                                    sx={{
-                                                        marginBottom: "6px",
-                                                        width: "160px",
-                                                        // padding: "8.5px 16px",
-                                                        textTransform: "none",
-                                                        border: "1px solid #E01E26",
-                                                        color: "#E01E26",
-                                                        // marginLeft: "80%",
-                                                        borderRadius: "5px",
-                                                        "&:hover": {
-                                                            color: "#fff",
-                                                            backgroundColor: "var(--redColor)",
-                                                            "& svg": {
-                                                                fill: "#fff",
-                                                            },
-                                                        },
-                                                    }}
-                                                    component="span"
-                                                >
-                                                    Upload CSV
-                                                </Button>
-                                            </label>
-                                        </div>
+                            <div className='selectout-div'>
+                                <div className='leftside_div'>
+                                    <div>
+                                        <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                            Files
+                                        </Typography>
                                     </div>
-
-                                </Box>
-                            </div>
-
-                            {/* right side */}
-                            <div className='leftside_div'>
-                                <div>
-                                    <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
-                                        Campaigns
-                                    </Typography>
-                                </div>
-                                <ToastContainer />
-                                <Box sx={{ width: "100%", marginBottom: "52px" }}>
-                                    <Autocomplete
-                                        multiple
-                                        freeSolo
-                                        id="tags-outlined"
-                                        options={campaignStates}
-                                        getOptionLabel={(option) => option}
-                                        filterSelectedOptions
-                                        value={selectedCampaign}
-                                        onChange={(event, newValue) => {
-                                            setSelectedCampaign(newValue);
-                                        }}
-                                        renderInput={(params) => (
-                                            <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
-                                        )}
-                                    />                              
-                                      </Box>
-                                <div>
-                                    <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
-                                        Dispositions
-                                    </Typography>
-                                </div>
-
-                                <div className='f'>
-                                    <Box sx={{ width: "100%", marginBottom: "14px"  }}>
+                                    <ToastContainer />
+                                    <Box sx={{ width: "100%", marginBottom: "14px" }}>
                                         <Autocomplete
-                                        //  sx={{  marginBottom:"6px" }}
                                             multiple
                                             freeSolo
                                             id="tags-outlined"
-                                            options={dispositionStates}
+                                            options={fileStates}
                                             getOptionLabel={(option) => option}
                                             filterSelectedOptions
-                                            value={selectedDisp}
+                                            value={selectedFiles}
                                             onChange={(event, newValue) => {
-                                                setSelectedDisp(newValue);
+                                                setSelectedFiles(newValue);
                                             }}
-                                            open={menuOpen}
-                                            onBlur={() => setMenuOpen(false)}
-                                            onClose={() => setMenuOpen(true)} // Close the dropdown
-                                            onOpen={() => setMenuOpen(true)}  // Open the dropdown
                                             renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    label="Please Select Disposition(s)"
-                                                    placeholder="Disposition"
-                                                    // Handle clicking outside the text field to keep the dropdown open
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                        setMenuOpen(true);
-                                                    }}
-                                                />
+                                                <TextField {...params} label="Please Select File(s)" placeholder="Files" />
                                             )}
                                         />
                                         <FormControlLabel
-                                            control={<Switch checked={isDispositionActive} onChange={(e) => setIsDispositionActive(e.target.checked)} />}
-                                            label={isDispositionActive ? <p className='label'>Include Selected Disposition(s)</p> : <p className='label'>Exclude Selected Disposition(s)</p>}
+                                            control={<Switch checked={isFileActive} onChange={(e) => setIsFileActive(e.target.checked)} />}
+                                            label={isFileActive ? <p className='label'>Include Selected File(s)</p> : <p className='label'>Exclude Selected File(s)</p>}
                                         />
                                     </Box>
+
+                                    <div>
+                                        <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                            Areas
+                                        </Typography>
+                                    </div>
+                                    <ToastContainer />
+
+
+                                    <Box sx={{ width: "100%", marginBottom: "14px" }}>
+                                        <Autocomplete
+                                            //   sx={{  marginBottom:"6px" }}
+                                            multiple
+                                            freeSolo // Allows free text input
+                                            id="tags-outlined"
+                                            options={areaStates}
+                                            getOptionLabel={(option) => option}
+                                            filterSelectedOptions
+                                            value={selectedStates}
+                                            onChange={(event, newValue) => {
+                                                // Handle both existing options and new entries
+                                                if (typeof newValue === 'string') {
+                                                    setSelectedStates([...selectedStates, newValue]);
+                                                } else if (Array.isArray(newValue)) {
+                                                    setSelectedStates(newValue);
+                                                } else if (newValue === null) {
+                                                    // Clear the selected options when clicking the close button
+                                                    setSelectedStates([]);
+                                                }
+                                            }}
+                                            open={areaMenuOpen}
+                                            onBlur={() => setAreaMenuOpen(false)}
+                                            onClose={() => setAreaMenuOpen(true)} // Close the dropdown
+                                            onOpen={() => setAreaMenuOpen(true)}
+                                            renderInput={(params) => (
+                                                <TextField {...params} label="Please Select Area(s)" placeholder="Areas"
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        setAreaMenuOpen(true);
+                                                    }}
+                                                />
+                                            )}
+                                            clearOnBlur={false} // Set this prop to false
+                                            disableCloseOnSelect={false} // Set this prop to false
+                                        />
+
+
+                                        <div className='scv_button'>
+                                            
+                                            <FormControlLabel
+                                                control={<Switch checked={isAreaStateActive} onChange={(e) => setIsAreaStateActive(e.target.checked)} />}
+                                                label={isAreaStateActive ? <p className='label'>Include Selected Area(s)</p> : <p className='label'>Exclude Selected Area(s)</p>}
+                                            />
+
+                                            <div className="file-upload-container">
+                                                <input
+                                                    type="file"
+                                                    accept=".csv"
+                                                    onChange={handleFileUpload}
+                                                    style={{ display: 'none' }}
+                                                    id="file-input"
+                                                />
+                                                <label htmlFor="file-input">
+                                                    <Button
+
+                                                        variant="outlined"
+                                                        className="title-medium"
+                                                        sx={{
+                                                            marginBottom: "6px",
+                                                            width: "160px",
+                                                            // padding: "8.5px 16px",
+                                                            textTransform: "none",
+                                                            border: "1px solid #E01E26",
+                                                            color: "#E01E26",
+                                                            // marginLeft: "80%",
+                                                            borderRadius: "5px",
+                                                            "&:hover": {
+                                                                color: "#fff",
+                                                                backgroundColor: "var(--redColor)",
+                                                                "& svg": {
+                                                                    fill: "#fff",
+                                                                },
+                                                            },
+                                                        }}
+                                                        component="span"
+                                                    >
+                                                        Upload CSV
+                                                    </Button>
+                                                </label>
+                                            </div>
+
+
+                                        </div>
+
+                                    </Box>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className='button_out_div'>
-                            {/* <div className="f">
-                                <Button
-                                    type="button"
-                                    variant="outlined"
-                                    className="title-medium"
-                                    sx={{
-                                        marginBottom: "6px",
-                                        width: "100%",
-                                        padding: "8.5px 16px",
-                                        textTransform: "none",
-                                        border: "1px solid #E01E26",
-                                        color: "#E01E26",
-                                        marginTop: "2%",
-                                        borderRadius: "5px",
-                                        "&:hover": {
-                                            color: "#fff",
-                                            backgroundColor: "var(--redColor)",
-                                            "& svg": {
-                                                fill: "#fff",
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <div className='select-and-button-out-div '>
+                                    {/* right side */}
+                                    <div className='rightside_div'>
+                                        <div>
+                                            <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                Campaigns
+                                            </Typography>
+                                        </div>
+                                        <ToastContainer />
+                                        <Box sx={{ width: "100%", }}>
+                                            <Autocomplete
+                                                multiple
+                                                freeSolo
+                                                id="tags-outlined"
+                                                options={campaignStates}
+                                                getOptionLabel={(option) => option}
+                                                filterSelectedOptions
+                                                value={selectedCampaign}
+                                                onChange={(event, newValue) => {
+                                                    setSelectedCampaign(newValue);
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
+                                                )}
+                                            />
+                                        </Box>
+                                        <div>
+                                            <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                Dispositions
+                                            </Typography>
+                                        </div>
+
+                                        <div className='f'>
+                                            <Box sx={{ width: "100%", marginBottom: "14px" }}>
+                                                <Autocomplete
+                                                    //  sx={{  marginBottom:"6px" }}
+                                                    multiple
+                                                    freeSolo
+                                                    id="tags-outlined"
+                                                    options={dispositionStates}
+                                                    getOptionLabel={(option) => option}
+                                                    filterSelectedOptions
+                                                    value={selectedDisp}
+                                                    onChange={(event, newValue) => {
+                                                        setSelectedDisp(newValue);
+                                                    }}
+                                                    open={menuOpen}
+                                                    onBlur={() => setMenuOpen(false)}
+                                                    onClose={() => setMenuOpen(true)} // Close the dropdown
+                                                    onOpen={() => setMenuOpen(true)}  // Open the dropdown
+                                                    renderInput={(params) => (
+                                                        <TextField
+                                                            {...params}
+                                                            label="Please Select Disposition(s)"
+                                                            placeholder="Disposition"
+                                                            // Handle clicking outside the text field to keep the dropdown open
+                                                            onClick={(event) => {
+                                                                event.stopPropagation();
+                                                                setMenuOpen(true);
+                                                            }}
+                                                        />
+                                                    )}
+                                                />
+                                                <FormControlLabel
+                                                    control={<Switch checked={isDispositionActive} onChange={(e) => setIsDispositionActive(e.target.checked)} />}
+                                                    label={isDispositionActive ? <p className='label'>Include Selected Disposition(s)</p> : <p className='label'>Exclude Selected Disposition(s)</p>}
+                                                />
+                                            </Box>
+                                        </div>
+                                    </div>
+                               
+
+
+
+                                <div className='button_out_div'>
+
+                                    <Button
+                                        type="button"
+                                        variant="outlined"
+                                        className="title-medium"
+                                        sx={{
+                                            marginBottom: "6px",
+                                            width: "100%",
+                                            padding: "8.5px 16px",
+                                            textTransform: "none",
+                                            border: "1px solid #E01E26",
+                                            color: "#E01E26",
+                                            marginTop: "2%",
+                                            borderRadius: "5px",
+                                            "&:hover": {
+                                                color: "#fff",
+                                                backgroundColor: "var(--redColor)",
+                                                "& svg": {
+                                                    fill: "#fff",
+                                                },
                                             },
-                                        },
-                                    }}
-                                    onClick={handleDownload}
-                                >
-                                    Download
-                                </Button>
-                            </div> */}
+                                        }}
+                                        onClick={handleTagDownload}
+                                    >
+                                        Download
+                                    </Button>
 
-                            <Button
-                                type="button"
-                                variant="outlined"
-                                className="title-medium"
-                                sx={{
-                                    marginBottom: "6px",
-                                    width: "100%",
-                                    padding: "8.5px 16px",
-                                    textTransform: "none",
-                                    border: "1px solid #E01E26",
-                                    color: "#E01E26",
-                                    marginTop: "2%",
-                                    borderRadius: "5px",
-                                    "&:hover": {
-                                        color: "#fff",
-                                        backgroundColor: "var(--redColor)",
-                                        "& svg": {
-                                            fill: "#fff",
-                                        },
-                                    },
-                                }}
-                                onClick={handleTagDownload}
-                            >
-                              Download
-                            </Button>
+                                    {/* <Button
+                                        type="button"
+                                        variant="outlined"
+                                        className="title-medium"
+                                        sx={{
+                                            width: "100%",
+                                            padding: "8.5px 16px",
+                                            textTransform: "none",
+                                            border: "1px solid #E01E26",
+                                            color: "#E01E26",
+                                            marginTop: "2%",
+                                            borderRadius: "5px",
+                                            "&:hover": {
+                                                color: "#fff",
+                                                backgroundColor: "var(--redColor)",
+                                                "& svg": {
+                                                    fill: "#fff",
+                                                },
+                                            },
+                                        }}
+                                        onClick={openDownloadPop}
 
-                            <Button
-                                type="button"
-                                variant="outlined"
-                                className="title-medium"
-                                sx={{
-                                    width: "100%",
-                                    padding: "8.5px 16px",
-                                    textTransform: "none",
-                                    border: "1px solid #E01E26",
-                                    color: "#E01E26",
-                                    marginTop: "2%",
-                                    borderRadius: "5px",
-                                    "&:hover": {
-                                        color: "#fff",
-                                        backgroundColor: "var(--redColor)",
-                                        "& svg": {
-                                            fill: "#fff",
-                                        },
-                                    },
-                                }}
-                                onClick={openDownloadPop}
-                             
-                            >
-                       Download Chunks
-                            </Button>
+                                    >
+                                        Download Chunks
+                                    </Button> */}
 
-{/* Overlay */}
-{isDownloadOpen && <div className="overlay"></div>}
+                                    {/* Overlay */}
+                                    {isDownloadOpen && <div className="overlay"></div>}
 
-{/* Popup */}
-{isDownloadOpen && (
-    <div className="popup">
-        <div className="popup-content">
-            <Typography  sx={{ marginTop: "12px",marginBottom:"4px" }} variant="h6">No of Chunks</Typography>
-            <TextField
-                sx={{ marginBottom: "10px" }}
-                label="No of Chunks"
-                variant="outlined"
-                type="number"
-                fullWidth
-                value={numberOfChunks}
-                onChange={(e) => setNumberOfChunks(e.target.value)}
-            />
-             <Typography   sx={{ marginBottom:"4px" }} variant="h6">No of IDs</Typography>
-            <TextField
-                sx={{ marginBottom: "14px" }}
-                label="No of IDs"
-                variant="outlined"
-                type="number"
-                fullWidth
-                value={numberOfIds}
-                onChange={(e) => setNumberOfIds(e.target.value)}
-            />
-            <Button variant="outlined" fullWidth    onClick={handleDownload}>
-            Add File & Download
-            </Button>
-            <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
-                Cancel
-            </Button>
-        </div>
-    </div>
-)}
+                                    {/* Popup */}
+                                    {isDownloadOpen && (
+                                        <div className="popup">
+                                            <div className="popup-content">
+                                                <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of Chunks</Typography>
+                                                <TextField
+                                                    sx={{ marginBottom: "10px" }}
+                                                    label="No of Chunks"
+                                                    variant="outlined"
+                                                    type="number"
+                                                    fullWidth
+                                                    value={numberOfChunks}
+                                                    onChange={(e) => setNumberOfChunks(e.target.value)}
+                                                />
+                                                <Typography sx={{ marginBottom: "4px" }} variant="h6">No of IDs</Typography>
+                                                <TextField
+                                                    sx={{ marginBottom: "14px" }}
+                                                    label="No of IDs"
+                                                    variant="outlined"
+                                                    type="number"
+                                                    fullWidth
+                                                    value={numberOfIds}
+                                                    onChange={(e) => setNumberOfIds(e.target.value)}
+                                                />
+                                                <Button variant="outlined" fullWidth onClick={handleDownload}>
+                                                    Add File & Download
+                                                </Button>
+                                                <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
+                                                    Cancel
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                
+                                </div>
 
 
 
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -778,8 +779,8 @@ export default function DispAna({
                 <TableContainer
                     className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
                     component={Paper}
-                    >
-                       
+                >
+
                     <Box sx={{ display: "flex", justifyContent: "start", marginBottom: "10px", marginTop: "15px" }}>
                         <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
                             Disposition
@@ -796,36 +797,36 @@ export default function DispAna({
                         {isLoading ? (
                             // Display a loading indicator while data is being fetched
                             <TableRow>
-                            <TableCell colSpan={3} align="center">
-                                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <CircularProgress />
-                                </div>
-                            </TableCell>
-                        </TableRow>
+                                <TableCell colSpan={3} align="center">
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                        <CircularProgress />
+                                    </div>
+                                </TableCell>
+                            </TableRow>
                         ) : (
-                        <>
-                        <TableBody>
-                            {tableData.map((row, index) => (
-                                <TableRow key={row._id.$oid}>
-                                    <TableCell>{row.caller_id}</TableCell>
-                                    <TableCell>{row.disposition}</TableCell>
-                                    <TableCell>{row.area_state}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                        </>
-                      )}
+                            <>
+                                <TableBody>
+                                    {tableData.map((row, index) => (
+                                        <TableRow key={row._id.$oid}>
+                                            <TableCell>{row.caller_id}</TableCell>
+                                            <TableCell>{row.disposition}</TableCell>
+                                            <TableCell>{row.area_state}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </>
+                        )}
                     </Table>
                     <TablePagination
-    rowsPerPageOptions={[20, 50, 100]}
-    component="div"
-    count={-1}  // This is where you specify the total number of rows
-    rowsPerPage={rowsPerPage}
-    page={page}
-    onPageChange={handleChangePage}
-    onRowsPerPageChange={handleChangeRowsPerPage}
-   
-/>
+                        rowsPerPageOptions={[20, 50, 100]}
+                        component="div"
+                        count={-1}  // This is where you specify the total number of rows
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+
+                    />
 
                 </TableContainer>
             </Box>
