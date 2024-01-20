@@ -14,6 +14,9 @@ import { useParams } from 'react-router-dom';
 import Papa from 'papaparse'; // Import PapaParse for CSV parsing
 import { Select, MenuItem, InputLabel, FormControl, Chip, OutlinedInput } from '@mui/material';
 import CircularProgress from "@mui/material/CircularProgress";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { red } from '@mui/material/colors';
 export default function DispAna({
     className = "",
     blackBorder = false,
@@ -21,6 +24,17 @@ export default function DispAna({
     outlineHeader = false,
     hideHeader = false,
 }) {
+
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+    };
 
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     const [numberOfChunks, setNumberOfChunks] = useState(0);
@@ -46,7 +60,7 @@ export default function DispAna({
     const [isAreaStateActive, setIsAreaStateActive] = useState(false);
     const [isDispositionActive, setIsDispositionActive] = useState(false);
     const [isFileActive, setIsFileActive] = useState(true);
-    const https = "http://113.203.209.145:8011";
+    const https = "http://113.203.209.145:9000";
     const [menuOpen, setMenuOpen] = useState(false);
     const [areaMenuOpen, setAreaMenuOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +89,8 @@ export default function DispAna({
     const closeDownloadPop = () => {
         setIsDownloadOpen(false);
         setClientName("");
-        // setClientInfo("");
+        // setNumberOfChunks(0)
+        setNumberOfIds(0)
     };
     // console.log('Type',typeof(med))
 
@@ -240,7 +255,7 @@ export default function DispAna({
             return;
         }
 
-        const apiUrl = "http://113.203.209.145:8011/insert_client"; // Replace with your actual API URL
+        const apiUrl = "http://113.203.209.145:9000/insert_client"; // Replace with your actual API URL
 
         fetch(apiUrl, {
             method: 'POST',
@@ -296,7 +311,7 @@ export default function DispAna({
                 client_name: links,
                 file_exclude: isFileActive,
                 file_ids: selectedFiles,
-                chunk: numberOfChunks,
+                // chunk: numberOfChunks,
                 entity: numberOfIds
             }),
         })
@@ -327,6 +342,8 @@ export default function DispAna({
                 a.click();
                 a.remove(); // Clean up
                 window.URL.revokeObjectURL(url); // Release the URL
+
+                closeDownloadPop();
             })
             .catch(error => console.error('Error:', error));
     };
@@ -412,7 +429,7 @@ export default function DispAna({
                             }}
                             onClick={openPopup}
                         >
-                            Add Client
+                            Add Campaign
                         </Button>
                     </div>
                 </div>
@@ -461,7 +478,7 @@ export default function DispAna({
                             <div className='selectout-div'>
                                 <div className='leftside_div'>
                                     <div>
-                                        <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                        <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
                                             Files
                                         </Typography>
                                     </div>
@@ -489,7 +506,7 @@ export default function DispAna({
                                     </Box>
 
                                     <div>
-                                        <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                        <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
                                             Areas
                                         </Typography>
                                     </div>
@@ -535,7 +552,7 @@ export default function DispAna({
 
 
                                         <div className='scv_button'>
-                                            
+
                                             <FormControlLabel
                                                 control={<Switch checked={isAreaStateActive} onChange={(e) => setIsAreaStateActive(e.target.checked)} />}
                                                 label={isAreaStateActive ? <p className='label'>Include Selected Area(s)</p> : <p className='label'>Exclude Selected Area(s)</p>}
@@ -598,34 +615,66 @@ export default function DispAna({
 
 
 
-                            <div className='select-and-button-out-div '>
+                                <div className='select-and-button-out-div '>
                                     {/* right side */}
                                     <div className='rightside_div'>
-                                        <div>
-                                            <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                Campaigns
-                                            </Typography>
+
+                                        <div className='campaign-out'>
+                                            <div className='campaign-box'>
+                                                <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                    Campaigns
+                                                </Typography>
+
+                                                <ToastContainer />
+                                                <Box sx={{ width: "100%", }}>
+                                                    <Autocomplete
+                                                        multiple
+                                                        freeSolo
+                                                        id="tags-outlined"
+                                                        options={campaignStates}
+                                                        getOptionLabel={(option) => option}
+                                                        filterSelectedOptions
+                                                        value={selectedCampaign}
+                                                        onChange={(event, newValue) => {
+                                                            setSelectedCampaign(newValue);
+                                                        }}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
+                                                        )}
+                                                    />
+                                                </Box>
+                                            </div>
+
+                                            <div className='campaign-box'>
+                                                <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                    File Campaigns
+                                                </Typography>
+
+                                                <ToastContainer />
+                                                <Box sx={{ width: "100%", }}>
+                                                    <Autocomplete
+                                                        multiple
+                                                        freeSolo
+                                                        id="tags-outlined"
+                                                        options={campaignStates}
+                                                        getOptionLabel={(option) => option}
+                                                        filterSelectedOptions
+                                                        value={selectedCampaign}
+                                                        onChange={(event, newValue) => {
+                                                            setSelectedCampaign(newValue);
+                                                        }}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
+                                                        )}
+                                                    />
+                                                </Box>
+                                            </div>
+
                                         </div>
-                                        <ToastContainer />
-                                        <Box sx={{ width: "100%", }}>
-                                            <Autocomplete
-                                                multiple
-                                                freeSolo
-                                                id="tags-outlined"
-                                                options={campaignStates}
-                                                getOptionLabel={(option) => option}
-                                                filterSelectedOptions
-                                                value={selectedCampaign}
-                                                onChange={(event, newValue) => {
-                                                    setSelectedCampaign(newValue);
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
-                                                )}
-                                            />
-                                        </Box>
+
+
                                         <div>
-                                            <Typography className="heading_log" marginBottom="6px" fontSize="12pt" color={theme.palette.primary.main}>
+                                            <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
                                                 Dispositions
                                             </Typography>
                                         </div>
@@ -666,74 +715,198 @@ export default function DispAna({
                                                     label={isDispositionActive ? <p className='label'>Include Selected Disposition(s)</p> : <p className='label'>Exclude Selected Disposition(s)</p>}
                                                 />
                                             </Box>
+
+                                            <div className='date-out'>
+                                                <div style={{ width: "100%", display: "flex", gap: "20px" }}>
+                                                    <div>
+                                                        <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                            Start
+                                                        </Typography>
+                                                        <DatePicker
+                                                            className='date-box'
+                                                            selected={startDate}
+                                                            onChange={handleStartDateChange}
+                                                            selectsStart
+                                                            startDate={startDate}
+                                                            endDate={endDate}
+                                                            placeholderText="MM/DD/YYYY"
+                                                            PaperProps={{
+                                                                sx: {
+                                                                    "& .MuiPickersDay-root.Mui-selected": {
+                                                                        backgroundColor: red[500] + " !important",
+                                                                    },
+                                                                },
+                                                            }}
+
+                                                        />
+                                                    </div>
+                                                    <div >
+                                                        <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
+                                                            End
+                                                        </Typography>
+                                                        <DatePicker
+                                                            className='date-box'
+                                                            selected={endDate}
+                                                            onChange={handleEndDateChange}
+                                                            selectsEnd
+                                                            startDate={startDate}
+                                                            endDate={endDate}
+                                                            minDate={startDate}
+                                                            placeholderText="MM/DD/YYYY"
+                                                        />
+                                                    </div>
+                                                </div>
+
+
+                                                <div >
+                                                    {/* <Button
+                                                        type="button"
+                                                        variant="outlined"
+                                                        className="title-medium"
+                                                        sx={{
+                                                 
+                                                            width: "100%",
+                                                            padding: "20px 90px",
+                                                            textTransform: "none",
+                                                            border: "1px solid #E01E26",
+                                                            color: "#E01E26",
+                                                            marginTop: "7%",
+                                                            borderRadius: "5px",
+                                                           
+                                                        }}
+
+                                                    >
+                                                        87698768
+                                                    </Button> */}
+                                                </div>
+
+
+                                            </div>
+
+
                                         </div>
                                     </div>
-                               
 
 
 
-                                <div className='button_out_div'>
 
-                                    <Button
-                                        type="button"
-                                        variant="outlined"
-                                        className="title-medium"
-                                        sx={{
-                                            marginBottom: "6px",
-                                            width: "100%",
-                                            padding: "8.5px 16px",
-                                            textTransform: "none",
-                                            border: "1px solid #E01E26",
-                                            color: "#E01E26",
-                                            marginTop: "2%",
-                                            borderRadius: "5px",
-                                            "&:hover": {
-                                                color: "#fff",
-                                                backgroundColor: "var(--redColor)",
-                                                "& svg": {
-                                                    fill: "#fff",
+                                    <div className='button_out_div'>
+
+
+                                        {/* <Button
+                                            type="button"
+                                            // variant="outlined"
+                                            // className="title-medium"
+                                            sx={{
+                                                marginBottom: "30px",
+                                                width: "100%",
+                                                padding: "10px 16px",
+                                                textTransform: "none",
+                                                outerline:"none",
+                                                border:"none",
+                                                // borderBottom: "1px solid #E01E26",
+                                                color: "#E01E26",
+                                                marginTop: "2%",
+                                                borderRadius: "0px",
+                                                fontSize:"24pt"
+                                                // "&:hover": {
+                                                //     color: "#fff",
+                                                //     backgroundColor: "var(--redColor)",
+                                                //     "& svg": {
+                                                //         fill: "#fff",
+                                                //     },
+                                                // },
+                                            }}
+
+                                        >
+                                         Count : <span   style={{
+                                                border:"none",
+                                            marginTop:"4px",
+                                                color: "black",
+                                                fontSize:"18pt"    
+                                            }}> 
+                                            44.5 
+                                            </span> 
+                                            
+                                            <span style={{
+                                                border:"none",
+                                            marginTop:"3px",
+                                                color: "#E01E26",                                      
+                                                fontSize:"18pt",  
+                                                fontWeight:"700"
+                                            }}> 
+                                            Laks
+                                            </span>
+                                        </Button> */}
+
+
+                                        <div className='count-div-out'>
+                                            <div className='count-div'>
+                                              <span className='count-span-three'>Total calls : </span>  <span className='count-span-one'> 44.6 </span> <span className='count-span-two'>lacs</span>
+                                            </div>
+                                        </div>
+
+
+                                        <Button
+                                            type="button"
+                                            variant="outlined"
+                                            className="title-medium"
+                                            sx={{
+                                                marginBottom: "6px",
+                                                width: "100%",
+                                                padding: "8.5px 16px",
+                                                textTransform: "none",
+                                                border: "1px solid #E01E26",
+                                                color: "#E01E26",
+                                                marginTop: "2%",
+                                                borderRadius: "5px",
+                                                "&:hover": {
+                                                    color: "#fff",
+                                                    backgroundColor: "var(--redColor)",
+                                                    "& svg": {
+                                                        fill: "#fff",
+                                                    },
                                                 },
-                                            },
-                                        }}
-                                        onClick={handleTagDownload}
-                                    >
-                                        Download
-                                    </Button>
+                                            }}
+                                            onClick={handleTagDownload}
+                                        >
+                                            Download
+                                        </Button>
 
-                                    {/* <Button
-                                        type="button"
-                                        variant="outlined"
-                                        className="title-medium"
-                                        sx={{
-                                            width: "100%",
-                                            padding: "8.5px 16px",
-                                            textTransform: "none",
-                                            border: "1px solid #E01E26",
-                                            color: "#E01E26",
-                                            marginTop: "2%",
-                                            borderRadius: "5px",
-                                            "&:hover": {
-                                                color: "#fff",
-                                                backgroundColor: "var(--redColor)",
-                                                "& svg": {
-                                                    fill: "#fff",
+                                        <Button
+                                            type="button"
+                                            variant="outlined"
+                                            className="title-medium"
+                                            sx={{
+                                                width: "100%",
+                                                padding: "8.5px 16px",
+                                                textTransform: "none",
+                                                border: "1px solid #E01E26",
+                                                color: "#E01E26",
+                                                marginTop: "2%",
+                                                borderRadius: "5px",
+                                                "&:hover": {
+                                                    color: "#fff",
+                                                    backgroundColor: "var(--redColor)",
+                                                    "& svg": {
+                                                        fill: "#fff",
+                                                    },
                                                 },
-                                            },
-                                        }}
-                                        onClick={openDownloadPop}
+                                            }}
+                                            onClick={openDownloadPop}
 
-                                    >
-                                        Download Chunks
-                                    </Button> */}
+                                        >
+                                            Download Chunks
+                                        </Button>
 
-                                    {/* Overlay */}
-                                    {isDownloadOpen && <div className="overlay"></div>}
+                                        {/* Overlay */}
+                                        {isDownloadOpen && <div className="overlay"></div>}
 
-                                    {/* Popup */}
-                                    {isDownloadOpen && (
-                                        <div className="popup">
-                                            <div className="popup-content">
-                                                <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of Chunks</Typography>
+                                        {/* Popup */}
+                                        {isDownloadOpen && (
+                                            <div className="popup">
+                                                <div className="popup-content">
+                                                    {/* <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of Chunks</Typography>
                                                 <TextField
                                                     sx={{ marginBottom: "10px" }}
                                                     label="No of Chunks"
@@ -742,29 +915,29 @@ export default function DispAna({
                                                     fullWidth
                                                     value={numberOfChunks}
                                                     onChange={(e) => setNumberOfChunks(e.target.value)}
-                                                />
-                                                <Typography sx={{ marginBottom: "4px" }} variant="h6">No of IDs</Typography>
-                                                <TextField
-                                                    sx={{ marginBottom: "14px" }}
-                                                    label="No of IDs"
-                                                    variant="outlined"
-                                                    type="number"
-                                                    fullWidth
-                                                    value={numberOfIds}
-                                                    onChange={(e) => setNumberOfIds(e.target.value)}
-                                                />
-                                                <Button variant="outlined" fullWidth onClick={handleDownload}>
-                                                    Add File & Download
-                                                </Button>
-                                                <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
-                                                    Cancel
-                                                </Button>
+                                                /> */}
+                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of IDs</Typography>
+                                                    <TextField
+                                                        sx={{ marginBottom: "14px" }}
+                                                        label="No of IDs"
+                                                        variant="outlined"
+                                                        type="number"
+                                                        fullWidth
+                                                        value={numberOfIds}
+                                                        onChange={(e) => setNumberOfIds(e.target.value)}
+                                                    />
+                                                    <Button variant="outlined" fullWidth onClick={handleDownload}>
+                                                        Add File & Download
+                                                    </Button>
+                                                    <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
+                                                        Cancel
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
+                                        )}
+                                    </div>
 
-                                
+
                                 </div>
 
 
@@ -829,7 +1002,7 @@ export default function DispAna({
                     />
 
                 </TableContainer>
-            </Box>
+            </Box >
         </>
     );
 }
