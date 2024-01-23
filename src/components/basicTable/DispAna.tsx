@@ -27,45 +27,83 @@ export default function DispAna({
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
+    
     const handleStartDateChange = (date) => {
         setStartDate(date);
     };
 
+    const formatDateStart = (date) => {
+        if (!date) return null;
+    
+        const year = date.getUTCFullYear();
+        const month = (`0${date.getUTCMonth() + 1}`).slice(-2); // Months are zero-based
+        const day = (`0${date.getUTCDate()+1}`).slice(-2);
+    
+        return `${year}-${month}-${day}`;
+      };
+      const formattedDateStart = formatDateStart(startDate);
+
+
+
     const handleEndDateChange = (date) => {
         setEndDate(date);
     };
+    const formatDateEnd = (date) => {
+        if (!date) return null;
+    
+        const year = date.getUTCFullYear();
+        const month = (`0${date.getUTCMonth() + 1}`).slice(-2); // Months are zero-based
+        const day = (`0${date.getUTCDate()+1}`).slice(-2);
+    
+        return `${year}-${month}-${day}`;
+      };
+      const formattedDateEnd = formatDateEnd(endDate);
 
-    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
-    const [numberOfChunks, setNumberOfChunks] = useState(0);
-    const [numberOfIds, setNumberOfIds] = useState(0);
+
+
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [clientName, setClientName] = useState("");
+    const [clientCampaignName, setClientCampaignName] = useState("");
+
     const [fileStates, setFileStates] = useState([]);
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]); 
+    const [isFileActive, setIsFileActive] = useState(true);
+
     const [campaignStates, setCampaignStates] = useState([]);
     const [selectedCampaign, setSelectedCampaign] = useState([]);
-    const [open, setOpen] = useState(false);
-    // const [clientInfo, setClientInfo] = useState("");
+
+    const [clientCampaignStates, setClientCampaignStates] = useState([]);
+    const [selectedClientCampaign, setSelectedClientCampaign] = useState([]);
+
     const [areaStates, setAreaStates] = useState([]);
     const [selectedStates, setSelectedStates] = useState([]);
+    const [isAreaStateActive, setIsAreaStateActive] = useState(false);
+    
     const [dispositionStates, setDispositionStates] = useState([]);
     const [selectedDisp, setSelectedDisp] = useState([]);
-    const [allData, setAllData] = useState([]); // State for all fetched data
+    const [isDispositionActive, setIsDispositionActive] = useState(false);
+    
+    const [isLoading, setIsLoading] = useState(false);
+    const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+
+    const https = "http://113.203.209.145:9000";
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [areaMenuOpen, setAreaMenuOpen] = useState(false); 
+    const [numberOfIds, setNumberOfIds] = useState(0);
+    
     const [tableData, setTableData] = useState([]); // State for currently displayed table data
+    const [counterData, setCounterData] = useState(); // State for currently displayed table data
     const [page, setPage] = useState(0); // Current page
     const [rowsPerPage, setRowsPerPage] = useState(20); // Rows per page
     const [totalCount, setTotalCount] = useState(0); // Total count of rows
-    const [isAreaStateActive, setIsAreaStateActive] = useState(false);
-    const [isDispositionActive, setIsDispositionActive] = useState(false);
-    const [isFileActive, setIsFileActive] = useState(true);
-    const https = "http://113.203.209.145:9000";
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [areaMenuOpen, setAreaMenuOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
+      
+    const [open, setOpen] = useState(false);
+    const [allData, setAllData] = useState([]); // State for all fetched data
+    const [numberOfChunks, setNumberOfChunks] = useState(0);
     const [uploadedCSV, setUploadedCSV] = useState(null);
+
+
+
     const { links } = useParams();
     const handleChange = (event) => {
         setSelectedDisp(event.target.value);
@@ -88,7 +126,7 @@ export default function DispAna({
 
     const closeDownloadPop = () => {
         setIsDownloadOpen(false);
-        setClientName("");
+        setClientCampaignName("");
         // setNumberOfChunks(0)
         setNumberOfIds(0)
     };
@@ -105,7 +143,7 @@ export default function DispAna({
                         .map(entry => entry[0]) // Assuming the area data is in the first column
                         .filter(area => typeof area === 'string' && area.trim() !== '');
 
-                    console.log("Areas from CSV:", areasFromCSV);
+                    
 
                     // Update both areaStates and selectedStates
                     setAreaStates(areasFromCSV.length > 0 ? areasFromCSV : []);
@@ -132,42 +170,39 @@ export default function DispAna({
     };
 
     // Fetch area and disposition states
-    let data_to_send = { client_name: links };
-
-    const fetchAndUpdateData = async () => {
-        try {
-            const response = await fetch(https + '/get_file_client', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data_to_send),
-            });
-            const data = await response.json();
-
-            // Only update if the data is different to avoid unnecessary re-renders
-            if (JSON.stringify(fileStates) !== JSON.stringify(data.data.data)) {
+    
+    const fetchFileData = () => {
+        let url = https + '/get_file_client';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+            
+                client_name: links,
+                campaign_client: selectedClientCampaign
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
                 setFileStates(data.data.data);
                 setSelectedFiles(data.data.data);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
+            })
+            .catch(error => {
+                console.error('Error fetching table data:', error)
+            });
     };
 
     useEffect(() => {
-        fetchAndUpdateData(); // Initial fetch
-        const intervalId = setInterval(() => {
-            fetchAndUpdateData(); // Fetch data periodically
-        }, 100000); // Adjust the interval as needed
+        fetchFileData();
+    }, [links,selectedClientCampaign]);
+   
 
-        return () => clearInterval(intervalId); // Cleanup interval on component unmount
-    }, [fileStates]);
-    console.log("filedata", fileStates)
+   
 
 
     useEffect(() => {
-
         fetch(https + '/get_area_states')
             .then(response => response.json())
             .then(data => setAreaStates(data.data.data))
@@ -177,7 +212,13 @@ export default function DispAna({
             .then(response => response.json())
             .then(data => setCampaignStates(data.data.data))
             .catch(error => console.error('Error:', error));
-        campaignStates
+
+            fetch(https + '/get_client_campaign')
+            .then(response => response.json())
+            .then(data => setClientCampaignStates(data.data.data))
+            .catch(error => console.error('Error:', error));
+        
+
         fetch(https + '/get_disposition_states')
             .then(response => response.json())
             .then(data => setDispositionStates(data.data.data))
@@ -205,7 +246,10 @@ export default function DispAna({
                 disp_exclude: isDispositionActive,
                 file_exclude: isFileActive,
                 med_name: selectedCampaign,
-                file_ids: selectedFiles
+                file_ids: selectedFiles,
+                client_campaign: clientCampaignStates,
+                start_date: formattedDateStart,
+                end_date: formattedDateEnd
             }),
         })
             .then(response => response.json())
@@ -213,7 +257,7 @@ export default function DispAna({
                 setTableData(data.data.data); // Update table data with response
                 setTotalCount(data.totalCount); // Update total count if provided in response
                 setIsLoading(false);
-                console.log("rows.................", data.data.data[0])
+         
             })
             .catch(error => {
                 console.error('Error fetching table data:', error)
@@ -223,10 +267,59 @@ export default function DispAna({
 
     useEffect(() => {
         fetchTableData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles]);
-    console.log("disp_name" + selectedDisp)
-    console.log("campaign_name" + selectedCampaign)
-    console.log("total_count", totalCount);
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, clientCampaignStates,formattedDateStart,formattedDateEnd]);
+ 
+// console.log("start date.....",formattedDateStart)
+// console.log("end date.....",formattedDateEnd)
+
+     const fetchCounterData = () => {
+        setIsLoading(true);
+        // Calculate start index based on current page and rows per page
+        const startIndex = page * rowsPerPage; // Assuming page starts at 0
+
+        const url = new URL(https + '/get_dispositions_counter');
+        url.searchParams.append('start_index', startIndex);
+        url.searchParams.append('num_rows', rowsPerPage);
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                area_states: selectedStates,
+                dispositions: selectedDisp,
+                area_exclude: isAreaStateActive,
+                disp_exclude: isDispositionActive,
+                file_exclude: isFileActive,
+                med_name: selectedCampaign,
+                file_ids: selectedFiles,
+                client_campaign: clientCampaignStates,
+                start_date: formattedDateStart,
+                end_date: formattedDateEnd
+                
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                setCounterData(data.data.data); // Update table data with response
+                setTotalCount(data.totalCount); // Update total count if provided in response
+                setIsLoading(false);
+            
+            })
+            .catch(error => {
+                console.error('Error fetching table data:', error)
+                setIsLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        fetchCounterData();
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, clientCampaignStates,formattedDateStart,formattedDateEnd]);
+   
+
+    // console.log("counterData.................", counterData)
+
 
 
     const handleChangePage = (event, newPage) => {
@@ -244,25 +337,25 @@ export default function DispAna({
 
     const closePopup = () => {
         setIsPopupOpen(false);
-        setClientName("");
+        setClientCampaignName("");
         // setClientInfo("");
     };
     // console.log('Type',typeof(med))
 
-    const handleAddClient = () => {
-        if (clientName.trim() === "") {
+    const handleAddClientCampaign = () => {
+        if (clientCampaignName.trim() === "") {
             toast.error("Please enter a client name.");
             return;
         }
 
-        const apiUrl = "http://113.203.209.145:9000/insert_client"; // Replace with your actual API URL
+        const apiUrl =(https + '/insert_campaign_client') // Replace with your actual API URL
 
         fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ client_name: clientName }), // Send the client name in the request body
+            body: JSON.stringify({ client_campaign_name: clientCampaignName }), // Send the client name in the request body
         })
             .then(response => {
                 if (!response.ok) {
@@ -271,17 +364,19 @@ export default function DispAna({
                 return response.json();
             })
             .then(data => {
-                console.log("Client added:", data);
-                toast.success("Client added successfully!");
+                // console.log("Client Campaign added:", data);
+                toast.success("Client Campaign added successfully!");
 
                 closePopup(); // Close the popup after successful addition
-                setClientName(""); // Reset client name
+                setClientCampaignName(""); // Reset client name
             })
             .catch(error => {
-                console.error('Error adding client:', error);
-                toast.error("Error adding client. Please try again.");
+                console.error('Error adding client Campaign:', error);
+                toast.error("Error adding client Campaign. Please try again.");
             });
     };
+
+
 
     function getCurrentDateTime() {
         const now = new Date();
@@ -312,7 +407,10 @@ export default function DispAna({
                 file_exclude: isFileActive,
                 file_ids: selectedFiles,
                 // chunk: numberOfChunks,
-                entity: numberOfIds
+                entity: numberOfIds,
+                client_campaign: clientCampaignStates,
+                start_date: formattedDateStart,
+                end_date: formattedDateEnd
             }),
         })
             .then(response => response.blob()) // Handle response as a blob
@@ -363,7 +461,10 @@ export default function DispAna({
                 med_name: selectedCampaign,
                 client_name: links,
                 file_exclude: isFileActive,
-                file_ids: selectedFiles
+                file_ids: selectedFiles,
+                client_campaign: clientCampaignStates,
+                start_date: formattedDateStart,
+                end_date: formattedDateEnd
             }),
         })
             .then(response => response.blob()) // Handle response as a blob
@@ -442,18 +543,18 @@ export default function DispAna({
                 {isPopupOpen && (
                     <div className="popup">
                         <div className="popup-content">
-                            <Typography variant="h6">Add Client</Typography>
+                            <Typography variant="h6">Add Client Campaign</Typography>
                             <TextField
                                 sx={{ marginBottom: "10px", marginTop: "12px" }}
-                                label="Client Name"
+                                label="Client Campaign Name"
                                 variant="outlined"
                                 fullWidth
-                                value={clientName}
-                                onChange={(e) => setClientName(e.target.value)}
+                                value={clientCampaignName}
+                                onChange={(e) => setClientCampaignName(e.target.value)}
                             />
 
-                            <Button variant="outlined" fullWidth onClick={handleAddClient}>
-                                Add
+                            <Button variant="outlined" fullWidth onClick={handleAddClientCampaign}>
+                               Campaign Add
                             </Button>
                             <Button variant="outlined" fullWidth onClick={closePopup}>
                                 Cancel
@@ -461,14 +562,6 @@ export default function DispAna({
                         </div>
                     </div>
                 )}
-
-
-
-
-
-
-
-
 
                 <div className="form-container mt-3">
                     <div className='filters_divs'>
@@ -622,7 +715,7 @@ export default function DispAna({
                                         <div className='campaign-out'>
                                             <div className='campaign-box'>
                                                 <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                    Campaigns
+                                                File Campaigns
                                                 </Typography>
 
                                                 <ToastContainer />
@@ -639,7 +732,7 @@ export default function DispAna({
                                                             setSelectedCampaign(newValue);
                                                         }}
                                                         renderInput={(params) => (
-                                                            <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
+                                                            <TextField {...params} label="Please Select File Campaign(s)" placeholder=" File Campaigns" />
                                                         )}
                                                     />
                                                 </Box>
@@ -647,7 +740,7 @@ export default function DispAna({
 
                                             <div className='campaign-box'>
                                                 <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                    File Campaigns
+                                                    Client Campaigns
                                                 </Typography>
 
                                                 <ToastContainer />
@@ -656,15 +749,15 @@ export default function DispAna({
                                                         multiple
                                                         freeSolo
                                                         id="tags-outlined"
-                                                        options={campaignStates}
+                                                        options={clientCampaignStates}
                                                         getOptionLabel={(option) => option}
                                                         filterSelectedOptions
-                                                        value={selectedCampaign}
+                                                        value={selectedClientCampaign}
                                                         onChange={(event, newValue) => {
-                                                            setSelectedCampaign(newValue);
+                                                            setSelectedClientCampaign(newValue);
                                                         }}
                                                         renderInput={(params) => (
-                                                            <TextField {...params} label="Please Select Campaign(s)" placeholder="Campaigns" />
+                                                            <TextField {...params} label="Please Select Client Campaign(s)" placeholder="Client Campaigns" />
                                                         )}
                                                     />
                                                 </Box>
@@ -729,23 +822,17 @@ export default function DispAna({
                                                             selectsStart
                                                             startDate={startDate}
                                                             endDate={endDate}
-                                                            placeholderText="MM/DD/YYYY"
-                                                            PaperProps={{
-                                                                sx: {
-                                                                    "& .MuiPickersDay-root.Mui-selected": {
-                                                                        backgroundColor: red[500] + " !important",
-                                                                    },
-                                                                },
-                                                            }}
+                                                            placeholderText="MM/DD/YYYY"                                                        
 
                                                         />
                                                     </div>
                                                     <div >
                                                         <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                            End
+                                                            Enda
                                                         </Typography>
+
                                                         <DatePicker
-                                                            className='date-box'
+                                                            className='date-box red'
                                                             selected={endDate}
                                                             onChange={handleEndDateChange}
                                                             selectsEnd
@@ -753,96 +840,22 @@ export default function DispAna({
                                                             endDate={endDate}
                                                             minDate={startDate}
                                                             placeholderText="MM/DD/YYYY"
+                                                          
                                                         />
+
                                                     </div>
                                                 </div>
-
-
                                                 <div >
-                                                    {/* <Button
-                                                        type="button"
-                                                        variant="outlined"
-                                                        className="title-medium"
-                                                        sx={{
-                                                 
-                                                            width: "100%",
-                                                            padding: "20px 90px",
-                                                            textTransform: "none",
-                                                            border: "1px solid #E01E26",
-                                                            color: "#E01E26",
-                                                            marginTop: "7%",
-                                                            borderRadius: "5px",
-                                                           
-                                                        }}
-
-                                                    >
-                                                        87698768
-                                                    </Button> */}
                                                 </div>
-
-
                                             </div>
-
-
                                         </div>
                                     </div>
 
-
-
-
                                     <div className='button_out_div'>
-
-
-                                        {/* <Button
-                                            type="button"
-                                            // variant="outlined"
-                                            // className="title-medium"
-                                            sx={{
-                                                marginBottom: "30px",
-                                                width: "100%",
-                                                padding: "10px 16px",
-                                                textTransform: "none",
-                                                outerline:"none",
-                                                border:"none",
-                                                // borderBottom: "1px solid #E01E26",
-                                                color: "#E01E26",
-                                                marginTop: "2%",
-                                                borderRadius: "0px",
-                                                fontSize:"24pt"
-                                                // "&:hover": {
-                                                //     color: "#fff",
-                                                //     backgroundColor: "var(--redColor)",
-                                                //     "& svg": {
-                                                //         fill: "#fff",
-                                                //     },
-                                                // },
-                                            }}
-
-                                        >
-                                         Count : <span   style={{
-                                                border:"none",
-                                            marginTop:"4px",
-                                                color: "black",
-                                                fontSize:"18pt"    
-                                            }}> 
-                                            44.5 
-                                            </span> 
-                                            
-                                            <span style={{
-                                                border:"none",
-                                            marginTop:"3px",
-                                                color: "#E01E26",                                      
-                                                fontSize:"18pt",  
-                                                fontWeight:"700"
-                                            }}> 
-                                            Laks
-                                            </span>
-                                        </Button> */}
-
 
                                         <div className='count-div-out'>
                                             <div className='count-div'>
-                                              <span className='count-span-three'>Total calls : </span>  <span className='count-span-one'> 44.6 </span> <span className='count-span-two'>lacs</span>
+                                                <span className='count-span-three'>Total calls : </span>  <span className='count-span-one'> {counterData} </span> 
                                             </div>
                                         </div>
 
