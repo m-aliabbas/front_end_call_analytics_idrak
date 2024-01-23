@@ -90,6 +90,7 @@ export default function DispAna({
     const [menuOpen, setMenuOpen] = useState(false);
     const [areaMenuOpen, setAreaMenuOpen] = useState(false); 
     const [numberOfIds, setNumberOfIds] = useState(0);
+    const [numberOfChunks, setNumberOfChunks] = useState(0);
     
     const [tableData, setTableData] = useState([]); // State for currently displayed table data
     const [counterData, setCounterData] = useState(); // State for currently displayed table data
@@ -99,7 +100,6 @@ export default function DispAna({
       
     const [open, setOpen] = useState(false);
     const [allData, setAllData] = useState([]); // State for all fetched data
-    const [numberOfChunks, setNumberOfChunks] = useState(0);
     const [uploadedCSV, setUploadedCSV] = useState(null);
 
 
@@ -406,7 +406,7 @@ export default function DispAna({
                 client_name: links,
                 file_exclude: isFileActive,
                 file_ids: selectedFiles,
-                // chunk: numberOfChunks,
+                chunk: numberOfChunks,
                 entity: numberOfIds,
                 client_campaign: clientCampaignStates,
                 start_date: formattedDateStart,
@@ -919,26 +919,28 @@ export default function DispAna({
                                         {isDownloadOpen && (
                                             <div className="popup">
                                                 <div className="popup-content">
-                                                    {/* <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of Chunks</Typography>
-                                                <TextField
-                                                    sx={{ marginBottom: "10px" }}
-                                                    label="No of Chunks"
-                                                    variant="outlined"
-                                                    type="number"
-                                                    fullWidth
-                                                    value={numberOfChunks}
-                                                    onChange={(e) => setNumberOfChunks(e.target.value)}
-                                                /> */}
-                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of IDs</Typography>
+                                                <Typography sx={{   marginTop: "12px", marginBottom: "4px" }} variant="h6">No of IDs to Download</Typography>
                                                     <TextField
-                                                        sx={{ marginBottom: "14px" }}
+                                                        sx={{ marginBottom: "10px" }}
                                                         label="No of IDs"
                                                         variant="outlined"
-                                                        type="number"
+                                                        type="text"
                                                         fullWidth
                                                         value={numberOfIds}
                                                         onChange={(e) => setNumberOfIds(e.target.value)}
                                                     />
+
+                                                     <Typography sx={{ marginBottom: "4px" }} variant="h6">No of File's</Typography>
+                                                <TextField
+                                                    sx={{ marginBottom: "14px" }}
+                                                    label="No of File's"
+                                                    variant="outlined"
+                                                    type="text"
+                                                    fullWidth
+                                                    value={numberOfChunks}
+                                                    onChange={(e) => setNumberOfChunks(e.target.value)}
+                                                />
+
                                                     <Button variant="outlined" fullWidth onClick={handleDownload}>
                                                         Add File & Download
                                                     </Button>
