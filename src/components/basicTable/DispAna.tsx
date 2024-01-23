@@ -215,8 +215,25 @@ export default function DispAna({
 
             fetch(https + '/get_client_campaign')
             .then(response => response.json())
-            .then(data => setClientCampaignStates(data.data.data))
-            .catch(error => console.error('Error:', error));
+            .then(data => {
+                console.log(data.data.data);
+                
+                // Check if data.data.data exists and has at least one element
+                if (data.data.data && data.data.data.length > 0) {
+                    setClientCampaignStates(data.data.data);
+        
+                    // Accessing the first element safely
+                    setSelectedClientCampaign([data.data.data[0]]);
+                } else {
+                    // Handle the case where data.data.data is empty or undefined
+                    console.log("No data available");
+                    // You might want to set defaults or handle this scenario appropriately
+                }
+            })
+            .catch(error => {
+                // Error handling for the fetch request
+                console.error('Error fetching data:', error);
+            });
         
 
         fetch(https + '/get_disposition_states')
