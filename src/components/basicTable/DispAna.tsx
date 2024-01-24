@@ -86,7 +86,7 @@ export default function DispAna({
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
 
-    const https = "http://113.203.209.145:9000";
+    const https = "http://65.109.229.64:9000";
     const [menuOpen, setMenuOpen] = useState(false);
     const [areaMenuOpen, setAreaMenuOpen] = useState(false);
     const [numberOfIds, setNumberOfIds] = useState(0);
