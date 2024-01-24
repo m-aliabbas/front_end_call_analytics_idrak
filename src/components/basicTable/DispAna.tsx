@@ -27,21 +27,21 @@ export default function DispAna({
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    
+
     const handleStartDateChange = (date) => {
         setStartDate(date);
     };
 
     const formatDateStart = (date) => {
         if (!date) return null;
-    
+
         const year = date.getUTCFullYear();
         const month = (`0${date.getUTCMonth() + 1}`).slice(-2); // Months are zero-based
-        const day = (`0${date.getUTCDate()+1}`).slice(-2);
-    
+        const day = (`0${date.getUTCDate() + 1}`).slice(-2);
+
         return `${year}-${month}-${day}`;
-      };
-      const formattedDateStart = formatDateStart(startDate);
+    };
+    const formattedDateStart = formatDateStart(startDate);
 
 
 
@@ -50,14 +50,14 @@ export default function DispAna({
     };
     const formatDateEnd = (date) => {
         if (!date) return null;
-    
+
         const year = date.getUTCFullYear();
         const month = (`0${date.getUTCMonth() + 1}`).slice(-2); // Months are zero-based
-        const day = (`0${date.getUTCDate()+1}`).slice(-2);
-    
+        const day = (`0${date.getUTCDate() + 1}`).slice(-2);
+
         return `${year}-${month}-${day}`;
-      };
-      const formattedDateEnd = formatDateEnd(endDate);
+    };
+    const formattedDateEnd = formatDateEnd(endDate);
 
 
 
@@ -66,7 +66,7 @@ export default function DispAna({
     const [clientCampaignName, setClientCampaignName] = useState("");
 
     const [fileStates, setFileStates] = useState([]);
-    const [selectedFiles, setSelectedFiles] = useState([]); 
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [isFileActive, setIsFileActive] = useState(true);
 
     const [campaignStates, setCampaignStates] = useState([]);
@@ -78,26 +78,26 @@ export default function DispAna({
     const [areaStates, setAreaStates] = useState([]);
     const [selectedStates, setSelectedStates] = useState([]);
     const [isAreaStateActive, setIsAreaStateActive] = useState(false);
-    
+
     const [dispositionStates, setDispositionStates] = useState([]);
     const [selectedDisp, setSelectedDisp] = useState([]);
     const [isDispositionActive, setIsDispositionActive] = useState(false);
-    
+
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
 
     const https = "http://113.203.209.145:9000";
     const [menuOpen, setMenuOpen] = useState(false);
-    const [areaMenuOpen, setAreaMenuOpen] = useState(false); 
+    const [areaMenuOpen, setAreaMenuOpen] = useState(false);
     const [numberOfIds, setNumberOfIds] = useState(0);
     const [numberOfChunks, setNumberOfChunks] = useState(0);
-    
+
     const [tableData, setTableData] = useState([]); // State for currently displayed table data
     const [counterData, setCounterData] = useState(); // State for currently displayed table data
     const [page, setPage] = useState(0); // Current page
     const [rowsPerPage, setRowsPerPage] = useState(20); // Rows per page
     const [totalCount, setTotalCount] = useState(0); // Total count of rows
-      
+
     const [open, setOpen] = useState(false);
     const [allData, setAllData] = useState([]); // State for all fetched data
     const [uploadedCSV, setUploadedCSV] = useState(null);
@@ -143,7 +143,7 @@ export default function DispAna({
                         .map(entry => entry[0]) // Assuming the area data is in the first column
                         .filter(area => typeof area === 'string' && area.trim() !== '');
 
-                    
+
 
                     // Update both areaStates and selectedStates
                     setAreaStates(areasFromCSV.length > 0 ? areasFromCSV : []);
@@ -170,7 +170,7 @@ export default function DispAna({
     };
 
     // Fetch area and disposition states
-    
+
     const fetchFileData = () => {
         let url = https + '/get_file_client';
         fetch(url, {
@@ -179,7 +179,7 @@ export default function DispAna({
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-            
+
                 client_name: links,
                 campaign_client: selectedClientCampaign
             }),
@@ -196,10 +196,10 @@ export default function DispAna({
 
     useEffect(() => {
         fetchFileData();
-    }, [links,selectedClientCampaign]);
-   
+    }, [links, selectedClientCampaign]);
 
-   
+    console.log("selected campaign.........", selectedClientCampaign)
+
 
 
     useEffect(() => {
@@ -213,15 +213,15 @@ export default function DispAna({
             .then(data => setCampaignStates(data.data.data))
             .catch(error => console.error('Error:', error));
 
-            fetch(https + '/get_client_campaign')
+        fetch(https + '/get_client_campaign')
             .then(response => response.json())
             .then(data => {
-                console.log(data.data.data);
-                
+                console.log("data.....,,..", data.data.data);
+
                 // Check if data.data.data exists and has at least one element
                 if (data.data.data && data.data.data.length > 0) {
                     setClientCampaignStates(data.data.data);
-        
+
                     // Accessing the first element safely
                     setSelectedClientCampaign([data.data.data[0]]);
                 } else {
@@ -229,19 +229,20 @@ export default function DispAna({
                     console.log("No data available");
                     // You might want to set defaults or handle this scenario appropriately
                 }
+
             })
             .catch(error => {
                 // Error handling for the fetch request
                 console.error('Error fetching data:', error);
             });
-        
+
 
         fetch(https + '/get_disposition_states')
             .then(response => response.json())
             .then(data => setDispositionStates(data.data.data))
             .catch(error => console.error('Error:', error));
     }, []);
-
+    console.log("clientcampain state......", clientCampaignStates)
     const fetchTableData = () => {
         setIsLoading(true);
         // Calculate start index based on current page and rows per page
@@ -264,7 +265,7 @@ export default function DispAna({
                 file_exclude: isFileActive,
                 med_name: selectedCampaign,
                 file_ids: selectedFiles,
-                client_campaign: clientCampaignStates,
+                client_campaign: selectedClientCampaign,
                 start_date: formattedDateStart,
                 end_date: formattedDateEnd
             }),
@@ -274,7 +275,7 @@ export default function DispAna({
                 setTableData(data.data.data); // Update table data with response
                 setTotalCount(data.totalCount); // Update total count if provided in response
                 setIsLoading(false);
-         
+
             })
             .catch(error => {
                 console.error('Error fetching table data:', error)
@@ -284,12 +285,12 @@ export default function DispAna({
 
     useEffect(() => {
         fetchTableData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, clientCampaignStates,formattedDateStart,formattedDateEnd]);
- 
-// console.log("start date.....",formattedDateStart)
-// console.log("end date.....",formattedDateEnd)
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, selectedClientCampaign, formattedDateStart, formattedDateEnd]);
 
-     const fetchCounterData = () => {
+    // console.log("start date.....",formattedDateStart)
+    // console.log("end date.....",formattedDateEnd)
+
+    const fetchCounterData = () => {
         setIsLoading(true);
         // Calculate start index based on current page and rows per page
         const startIndex = page * rowsPerPage; // Assuming page starts at 0
@@ -311,10 +312,10 @@ export default function DispAna({
                 file_exclude: isFileActive,
                 med_name: selectedCampaign,
                 file_ids: selectedFiles,
-                client_campaign: clientCampaignStates,
+                client_campaign: selectedClientCampaign,
                 start_date: formattedDateStart,
                 end_date: formattedDateEnd
-                
+
             }),
         })
             .then(response => response.json())
@@ -322,7 +323,7 @@ export default function DispAna({
                 setCounterData(data.data.data); // Update table data with response
                 setTotalCount(data.totalCount); // Update total count if provided in response
                 setIsLoading(false);
-            
+
             })
             .catch(error => {
                 console.error('Error fetching table data:', error)
@@ -332,8 +333,8 @@ export default function DispAna({
 
     useEffect(() => {
         fetchCounterData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, clientCampaignStates,formattedDateStart,formattedDateEnd]);
-   
+    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, selectedClientCampaign, formattedDateStart, formattedDateEnd]);
+
 
     // console.log("counterData.................", counterData)
 
@@ -365,7 +366,7 @@ export default function DispAna({
             return;
         }
 
-        const apiUrl =(https + '/insert_campaign_client') // Replace with your actual API URL
+        const apiUrl = (https + '/insert_campaign_client') // Replace with your actual API URL
 
         fetch(apiUrl, {
             method: 'POST',
@@ -425,7 +426,7 @@ export default function DispAna({
                 file_ids: selectedFiles,
                 chunk: numberOfChunks,
                 entity: numberOfIds,
-                client_campaign: clientCampaignStates,
+                client_campaign: selectedClientCampaign,
                 start_date: formattedDateStart,
                 end_date: formattedDateEnd
             }),
@@ -447,7 +448,7 @@ export default function DispAna({
                 const dateTimeString = getCurrentDateTime();
 
                 // Use the date-time string in the file name
-                const fileName = `call_analytics_${dateTimeString}.csv`;
+                const fileName = `call_analytics_${dateTimeString}.zip`;
                 // Create a link and set the URL as the href
                 const a = document.createElement('a');
                 a.href = url;
@@ -479,7 +480,7 @@ export default function DispAna({
                 client_name: links,
                 file_exclude: isFileActive,
                 file_ids: selectedFiles,
-                client_campaign: clientCampaignStates,
+                client_campaign: selectedClientCampaign,
                 start_date: formattedDateStart,
                 end_date: formattedDateEnd
             }),
@@ -571,7 +572,7 @@ export default function DispAna({
                             />
 
                             <Button variant="outlined" fullWidth onClick={handleAddClientCampaign}>
-                               Campaign Add
+                                Campaign Add
                             </Button>
                             <Button variant="outlined" fullWidth onClick={closePopup}>
                                 Cancel
@@ -732,7 +733,7 @@ export default function DispAna({
                                         <div className='campaign-out'>
                                             <div className='campaign-box'>
                                                 <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                File Campaigns
+                                                    File Campaigns
                                                 </Typography>
 
                                                 <ToastContainer />
@@ -763,7 +764,7 @@ export default function DispAna({
                                                 <ToastContainer />
                                                 <Box sx={{ width: "100%", }}>
                                                     <Autocomplete
-                                                        multiple
+                                                        // multiple
                                                         freeSolo
                                                         id="tags-outlined"
                                                         options={clientCampaignStates}
@@ -771,8 +772,9 @@ export default function DispAna({
                                                         filterSelectedOptions
                                                         value={selectedClientCampaign}
                                                         onChange={(event, newValue) => {
-                                                            setSelectedClientCampaign(newValue);
+                                                            setSelectedClientCampaign([newValue]);
                                                         }}
+                                                        
                                                         renderInput={(params) => (
                                                             <TextField {...params} label="Please Select Client Campaign(s)" placeholder="Client Campaigns" />
                                                         )}
@@ -839,13 +841,13 @@ export default function DispAna({
                                                             selectsStart
                                                             startDate={startDate}
                                                             endDate={endDate}
-                                                            placeholderText="MM/DD/YYYY"                                                        
+                                                            placeholderText="MM/DD/YYYY"
 
                                                         />
                                                     </div>
                                                     <div >
                                                         <Typography className="heading_log" marginBottom="4px" fontSize="12pt" color={theme.palette.primary.main}>
-                                                            Enda
+                                                            End
                                                         </Typography>
 
                                                         <DatePicker
@@ -857,7 +859,7 @@ export default function DispAna({
                                                             endDate={endDate}
                                                             minDate={startDate}
                                                             placeholderText="MM/DD/YYYY"
-                                                          
+
                                                         />
 
                                                     </div>
@@ -872,7 +874,18 @@ export default function DispAna({
 
                                         <div className='count-div-out'>
                                             <div className='count-div'>
-                                                <span className='count-span-three'>Total calls : </span>  <span className='count-span-one'> {counterData} </span> 
+                                                {counterData ? (
+                                                    <>
+                                                <span className='count-span-three'>Total calls : </span>
+                                                  <span className='count-span-one'> {counterData} </span>
+                                                  </>
+                                                  )
+                                                    :
+                                                    (
+                                                    <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',height:"30px" }}>
+                                                        <CircularProgress style={{height:"30px"}} />
+                                                    </span>)
+                                                }
                                             </div>
                                         </div>
 
@@ -936,7 +949,7 @@ export default function DispAna({
                                         {isDownloadOpen && (
                                             <div className="popup">
                                                 <div className="popup-content">
-                                                <Typography sx={{   marginTop: "12px", marginBottom: "4px" }} variant="h6">No of IDs to Download</Typography>
+                                                    <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of IDs to Download</Typography>
                                                     <TextField
                                                         sx={{ marginBottom: "10px" }}
                                                         label="No of IDs"
@@ -947,16 +960,16 @@ export default function DispAna({
                                                         onChange={(e) => setNumberOfIds(e.target.value)}
                                                     />
 
-                                                     <Typography sx={{ marginBottom: "4px" }} variant="h6">No of File's</Typography>
-                                                <TextField
-                                                    sx={{ marginBottom: "14px" }}
-                                                    label="No of File's"
-                                                    variant="outlined"
-                                                    type="text"
-                                                    fullWidth
-                                                    value={numberOfChunks}
-                                                    onChange={(e) => setNumberOfChunks(e.target.value)}
-                                                />
+                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of File's</Typography>
+                                                    <TextField
+                                                        sx={{ marginBottom: "14px" }}
+                                                        label="No of File's"
+                                                        variant="outlined"
+                                                        type="text"
+                                                        fullWidth
+                                                        value={numberOfChunks}
+                                                        onChange={(e) => setNumberOfChunks(e.target.value)}
+                                                    />
 
                                                     <Button variant="outlined" fullWidth onClick={handleDownload}>
                                                         Add File & Download
