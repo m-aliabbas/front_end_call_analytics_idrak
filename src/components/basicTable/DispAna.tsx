@@ -85,8 +85,10 @@ export default function DispAna({
 
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
-
+    // live
     const https = "http://65.109.229.64:9000";
+    // local
+    // const https = "http://113.203.209.145:9000";
     const [menuOpen, setMenuOpen] = useState(false);
     const [areaMenuOpen, setAreaMenuOpen] = useState(false);
     const [numberOfIds, setNumberOfIds] = useState(0);
@@ -103,6 +105,7 @@ export default function DispAna({
     const [uploadedCSV, setUploadedCSV] = useState(null);
 
 
+   
 
     const { links } = useParams();
     const handleChange = (event) => {
@@ -872,22 +875,20 @@ export default function DispAna({
 
                                     <div className='button_out_div'>
 
-                                        <div className='count-div-out'>
-                                            <div className='count-div'>
-                                                {counterData ? (
-                                                    <>
-                                                <span className='count-span-three'>Total calls : </span>
-                                                  <span className='count-span-one'> {counterData} </span>
-                                                  </>
-                                                  )
-                                                    :
-                                                    (
-                                                    <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center',height:"30px" }}>
-                                                        <CircularProgress style={{height:"30px"}} />
-                                                    </span>)
-                                                }
-                                            </div>
-                                        </div>
+                                    <div className='count-div-out'>
+    <div className='count-div'>
+        {counterData !== undefined ? (
+            <>
+                <span className='count-span-three'>Total calls : </span>
+                <span className='count-span-one'> {counterData !== 0 ? counterData : 0} </span>
+            </>
+        ) : (
+            <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "30px" }}>
+                <CircularProgress style={{ height: "30px" }} />
+            </span>
+        )}
+    </div>
+</div>
 
 
                                         <Button

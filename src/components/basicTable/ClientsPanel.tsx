@@ -7,8 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
 import "./BasicTable.scss";
-const https = "http://65.109.229.64:9000";
-// http://113.203.209.145:8011
+   // live
+   const https = "http://65.109.229.64:9000";
+   // local
+   // const https = "http://113.203.209.145:9000";
 const ClientsPanel = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
