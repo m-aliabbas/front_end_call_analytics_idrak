@@ -43,7 +43,7 @@ export default function ReusableTable({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const https = "http://65.109.229.64:9000"
+  const https = "http://213.121.184.27:9000"
 const[fullTranscript, setFullTranscript]= useState(null)
 
   useEffect(() => {
@@ -125,15 +125,15 @@ const navigate=useNavigate()
     {
       fullTranscript ?(
  
-        <TableContainer
-      className={classNames(
-        `basic-table`,
-        className,
-        blackBorder ? "black-border" : "",
-        outlineHeader ? "outline-header" : ""
-      )}
-      component={Paper}
-    >
+              <TableContainer
+            className={classNames(
+              `basic-table`,
+              className,
+              blackBorder ? "black-border" : "",
+              outlineHeader ? "outline-header" : ""
+            )}
+            component={Paper}
+          >
       <Table
         sx={{
           ...(hideHeader && {
