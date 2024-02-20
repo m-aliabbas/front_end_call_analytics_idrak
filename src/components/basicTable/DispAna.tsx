@@ -86,7 +86,7 @@ export default function DispAna({
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
     // live
-    const https = "http://65.109.229.64:9000";
+    const https = "http://213.121.184.27:9000";
     // local
     // const https = "http://113.203.209.145:9000";
     const [menuOpen, setMenuOpen] = useState(false);
@@ -953,7 +953,7 @@ export default function DispAna({
                                                     <Typography sx={{ marginTop: "12px", marginBottom: "4px" }} variant="h6">No of IDs to Download</Typography>
                                                     <TextField
                                                         sx={{ marginBottom: "10px" }}
-                                                        label="No of IDs"
+                                                        label="No of ID's"
                                                         variant="outlined"
                                                         type="text"
                                                         fullWidth
@@ -961,10 +961,10 @@ export default function DispAna({
                                                         onChange={(e) => setNumberOfIds(e.target.value)}
                                                     />
 
-                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of File's</Typography>
+                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of ID's in one File</Typography>
                                                     <TextField
                                                         sx={{ marginBottom: "14px" }}
-                                                        label="No of File's"
+                                                        label="No of ID's in File"
                                                         variant="outlined"
                                                         type="text"
                                                         fullWidth

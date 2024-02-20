@@ -58,7 +58,8 @@ function App(): JSX.Element {
           path: "/",
           element: (
             <ProtectedRoute user={true}>
-            <ManageNumbers />
+                   <ClientsPanel />
+            {/* <ManageNumbers /> */}
             </ProtectedRoute>
           ),
         },
