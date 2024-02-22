@@ -31,39 +31,43 @@ const closePopup = () => {
     // setClientInfo("");
 };
 // console.log('Type',typeof(med))
-
 const handleAddClient = () => {
-    if (clientName.trim() === "") {
-        toast.error("Please enter a client name.");
-        return;
-    }
+  if (clientName.trim() === "") {
+      toast.error("Please enter a client name.");
+      return;
+  }
 
-    const apiUrl = (https + '/insert_client'); // Replace with your actual API URL
+  const apiUrl = https + '/insert_client'; // Replace with your actual API URL
 
-    fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ client_name: clientName }), // Send the client name in the request body
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Client added:", data);
-            toast.success("Client added successfully!");
+  fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ client_name: clientName }), // Send the client name in the request body
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log("Client added:", data);
+      toast.success("Client added successfully!");
 
-            closePopup(); // Close the popup after successful addition
-            setClientName(""); // Reset client name
-        })
-        .catch(error => {
-            console.error('Error adding client:', error);
-            toast.error("Error adding client. Please try again.");
-        });
+      closePopup(); // Close the popup after successful addition
+      setClientName(""); // Reset client name
+
+      // Use a timeout to ensure the user sees the success message before the page reloads
+      setTimeout(() => {
+          window.location.reload();
+      }, 1000); // Adjust the delay as needed
+  })
+  .catch(error => {
+      console.error('Error adding client:', error);
+      toast.error("Error adding client. Please try again.");
+  });
 };
 
 

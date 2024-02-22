@@ -85,6 +85,9 @@ export default function DispAna({
 
     const [isLoading, setIsLoading] = useState(false);
     const [isDownloadOpen, setIsDownloadOpen] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [isFileDownloading, setIsFileDownloading] = useState(false);
+
     // live
     const https = "http://213.121.184.27:9000";
     // local
@@ -105,7 +108,7 @@ export default function DispAna({
     const [uploadedCSV, setUploadedCSV] = useState(null);
 
 
-   
+
 
     const { links } = useParams();
     const handleChange = (event) => {
@@ -362,14 +365,13 @@ export default function DispAna({
         // setClientInfo("");
     };
     // console.log('Type',typeof(med))
-
     const handleAddClientCampaign = () => {
         if (clientCampaignName.trim() === "") {
             toast.error("Please enter a client name.");
             return;
         }
 
-        const apiUrl = (https + '/insert_campaign_client') // Replace with your actual API URL
+        const apiUrl = (https + '/insert_campaign_client'); // Replace with your actual API URL
 
         fetch(apiUrl, {
             method: 'POST',
@@ -385,11 +387,15 @@ export default function DispAna({
                 return response.json();
             })
             .then(data => {
-                // console.log("Client Campaign added:", data);
                 toast.success("Client Campaign added successfully!");
 
                 closePopup(); // Close the popup after successful addition
                 setClientCampaignName(""); // Reset client name
+
+                // Reload the page after a short delay to ensure the success message is shown
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); // Delay of 1000 milliseconds (1 second)
             })
             .catch(error => {
                 console.error('Error adding client Campaign:', error);
@@ -413,6 +419,8 @@ export default function DispAna({
 
     // Function to handle the API call for downloading dispositions
     const handleDownload = () => {
+        setIsFileDownloading(true); // Start the download process
+        
         fetch(https + '/get_download_dispositions_new', {
             method: 'POST',
             headers: {
@@ -434,41 +442,55 @@ export default function DispAna({
                 end_date: formattedDateEnd
             }),
         })
-            .then(response => response.blob()) // Handle response as a blob
-            .then(blob => {
-                // Create a new URL for the blob
-                toast.success("Download started!", {
-                    position: "bottom-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                const url = window.URL.createObjectURL(blob);
-                const now = new Date();
-                const dateTimeString = getCurrentDateTime();
-
-                // Use the date-time string in the file name
-                const fileName = `call_analytics_${dateTimeString}.zip`;
-                // Create a link and set the URL as the href
-                const a = document.createElement('a');
-                a.href = url;
-
-                a.download = fileName; // Set the file name for download
-                document.body.appendChild(a);
-                a.click();
-                a.remove(); // Clean up
-                window.URL.revokeObjectURL(url); // Release the URL
-
-                closeDownloadPop();
-            })
-            .catch(error => console.error('Error:', error));
+        .then(response => response.blob()) // Handle response as a blob
+        .then(blob => {
+            // Success path
+            const url = window.URL.createObjectURL(blob);
+            const dateTimeString = getCurrentDateTime(); // Ensure you have this function defined or adjust accordingly
+            const fileName = `call_analytics_${dateTimeString}.zip`; // Use the date-time string in the file name
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName; // Set the file name for download
+            document.body.appendChild(a);
+            a.click();
+            a.remove(); // Clean up
+            window.URL.revokeObjectURL(url); // Release the URL
+            toast.success("Download started!", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            closeDownloadPop();
+        })
+        .catch(error => {
+            // Error path
+            console.error('Error:', error);
+            toast.error("Download failed!", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        })
+        .finally(() => {
+            // This block executes regardless of success or failure
+            setIsFileDownloading(false); // Reset the downloading state
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000); // Optionally reload the page, but consider if this is the best UX
+        });
     };
-
+    
 
     const handleTagDownload = () => {
+        setIsDownloading(true);
         fetch(https + '/get_download_dispositions', {
             method: 'POST',
             headers: {
@@ -490,7 +512,6 @@ export default function DispAna({
         })
             .then(response => response.blob()) // Handle response as a blob
             .then(blob => {
-                // Create a new URL for the blob
                 toast.success("Tag Download started!", {
                     position: "bottom-right",
                     autoClose: 5000,
@@ -502,23 +523,29 @@ export default function DispAna({
                 });
 
                 const url = window.URL.createObjectURL(blob);
-                // Create a link and set the URL as the href
                 const a = document.createElement('a');
                 a.href = url;
-                // console.log('fileName',a)
                 const now = new Date();
                 const dateTimeString = now.toISOString().replace(/[\-\:\.]/g, '').slice(0, 15); // Format: 'YYYYMMDDTHHMMSS'
-
-                // Use the date-time string in the file name
                 const fileName = `${links}__${dateTimeString}.csv`;
-                a.download = fileName; // Set the file name for download
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
-                a.remove(); // Clean up
-                window.URL.revokeObjectURL(url); // Release the URL
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                setIsDownloading(false);
+
+                // Reload the page after a short delay to ensure the download dialog has appeared
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); // 1000 milliseconds delay for reloading
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                setIsDownloading(false);
+            });
     };
+
 
 
     return (
@@ -777,7 +804,7 @@ export default function DispAna({
                                                         onChange={(event, newValue) => {
                                                             setSelectedClientCampaign([newValue]);
                                                         }}
-                                                        
+
                                                         renderInput={(params) => (
                                                             <TextField {...params} label="Please Select Client Campaign(s)" placeholder="Client Campaigns" />
                                                         )}
@@ -875,20 +902,23 @@ export default function DispAna({
 
                                     <div className='button_out_div'>
 
-                                    <div className='count-div-out'>
-    <div className='count-div'>
-        {counterData !== undefined ? (
-            <>
-                <span className='count-span-three'>Total calls : </span>
-                <span className='count-span-one'> {counterData !== 0 ? counterData : 0} </span>
-            </>
-        ) : (
-            <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "30px" }}>
-                <CircularProgress style={{ height: "30px" }} />
-            </span>
-        )}
-    </div>
-</div>
+                                        <div className='count-div-out'>
+                                            <div className='count-div'>
+                                                {isLoading ? (
+                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "30px" }}>
+                                                        <CircularProgress />
+                                                    </div>
+
+                                                ) : (
+                                                    <>
+                                                        <span className='count-span-three'>Total calls : </span>
+                                                        <span className='count-span-one'> {counterData !== 0 ? counterData : 0} </span>
+                                                    </>
+
+                                                )}
+                                            </div>
+                                        </div>
+
 
 
                                         <Button
@@ -913,9 +943,11 @@ export default function DispAna({
                                                 },
                                             }}
                                             onClick={handleTagDownload}
+                                            disabled={isDownloading} // Disable button while downloading
                                         >
-                                            Download
+                                            {isDownloading ? 'Downloading...' : 'Download'}
                                         </Button>
+
 
                                         <Button
                                             type="button"
@@ -961,7 +993,7 @@ export default function DispAna({
                                                         onChange={(e) => setNumberOfIds(e.target.value)}
                                                     />
 
-                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of ID's in one File</Typography>
+                                                    <Typography sx={{ marginBottom: "4px" }} variant="h6">No of ID's in One File</Typography>
                                                     <TextField
                                                         sx={{ marginBottom: "14px" }}
                                                         label="No of ID's in File"
@@ -972,9 +1004,11 @@ export default function DispAna({
                                                         onChange={(e) => setNumberOfChunks(e.target.value)}
                                                     />
 
-                                                    <Button variant="outlined" fullWidth onClick={handleDownload}>
-                                                        Add File & Download
+                                                    <Button variant="outlined" fullWidth onClick={handleDownload} disabled={isFileDownloading}>
+                                                        {isFileDownloading ? 'Downloading...' : 'Add File & Download'}
                                                     </Button>
+
+
                                                     <Button variant="outlined" fullWidth onClick={closeDownloadPop}>
                                                         Cancel
                                                     </Button>

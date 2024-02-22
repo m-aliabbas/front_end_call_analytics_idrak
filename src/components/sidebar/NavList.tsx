@@ -13,12 +13,10 @@ import CallIco from '@mui/icons-material/Call';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
-import './Sidebar.scss'
-   // live
-   const https = "http://213.121.184.27:9000";
-   // local
-   // const https = "http://113.203.209.145:9000";
+import './Sidebar.scss';
 
+// Assuming your API URL is defined here
+const https = "http://213.121.184.27:9000";
 
 function NavItemWithoutChildren({ text, link, isActive, setActive, Icon }) {
   return (
@@ -27,7 +25,7 @@ function NavItemWithoutChildren({ text, link, isActive, setActive, Icon }) {
       onClick={() => setActive(link)}
       className={isActive ? "active" : ""}
     >
-      <ListItemIcon className="justify-center"  >
+      <ListItemIcon className="justify-center">
         {Icon && <Icon color={isActive ? "#fff" : undefined} />}
       </ListItemIcon>
       <ListItemText primary={text} />
@@ -42,37 +40,28 @@ function NavItemWithCollapse({
   setActive,
   isOpen,
   Icon,
+  onToggle,
 }) {
   return (
     <ListItemButton
-      sx={{
-        paddingRight: "10%",
-      }}
+      sx={{ paddingRight: "10%" }}
       onClick={() => {
         setActive(link);
+        onToggle && onToggle(); // Toggle only if onToggle is provided
       }}
       className={isActive ? "active" : ""}
     >
-      <ListItemIcon className="justify-center" >
+      <ListItemIcon className="justify-center">
         {Icon && <Icon color={isActive ? "#fff" : undefined} />}
       </ListItemIcon>
       <ListItemText primary={text} />
-      {isActive ? (
-        <ChevronDown
-          style={{
-            rotate: "180deg",
-            transition: "rotate 500ms",
-          }}
-          color="#fff"
-        />
-      ) : (
-        <ChevronDown
-          style={{
-            rotate: "0deg",
-            transition: "rotate 500ms",
-          }}
-        />
-      )}
+      <ChevronDown
+        style={{
+          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          transition: "transform 500ms",
+        }}
+        color={isActive ? "#fff" : undefined}
+      />
     </ListItemButton>
   );
 }
@@ -80,126 +69,66 @@ function NavItemWithCollapse({
 function SubMenu({ links, activeLink }) {
   const navigate = useNavigate();
   const location = useLocation();
+
   return (
     <Collapse in={true} timeout="auto" unmountOnExit>
-      <List
-        component="div"
-        sx={{
-          paddingY: "17px",
-        }}
-        disablePadding
-      >
-        {links.map((link,index) => {
-          return (
-            <ListItemButton
-              onClick={() => navigate(link.link)}
-             key={index}
-              sx={{ pl: 6 }}
-            >
-              <ListItemIcon
-                sx={{
-                  minWidth: "unset",
-                  paddingRight: "6px",
-                }}
-              >
-              <ArrowRightIcon />
-
-              </ListItemIcon>
-              <ListItemText
-                className="sub-menu"
-                sx={{
-                  span: {
-                    fontWeight:
-                      link.link === location.pathname ||
-                        location.pathname.includes(link.link + "/")
-                        ? "500 !important"
-                        : "400 !important",
-                  },
-                }}
-                primary={link.text}
-              />
-            </ListItemButton>
-          );
-        })}
-      </List>
-    </Collapse>
+    <List component="div" disablePadding>
+      {links.map((link, index) => (
+        <ListItemButton
+          key={index}
+          onClick={() => navigate(link.link)}
+          sx={{
+            pl: 6,
+            bgcolor: location.pathname === link.link ? "rgba(0, 0, 0, 0.04)" : "inherit", // Apply gray background if active
+            '&:hover': {
+              bgcolor: location.pathname === link.link ? "rgba(0, 0, 0, 0.04)" : "rgba(0, 0, 0, 0.08)", // Darken on hover
+            }
+          }}
+        >
+          <ListItemIcon>
+            <ArrowRightIcon />
+          </ListItemIcon>
+          <ListItemText primary={link.text} />
+        </ListItemButton>
+      ))}
+    </List>
+  </Collapse>
   );
 }
 
 function NavList() {
-  const [activeLink, setActiveLink] = useState("/");
-  const [dispositionChildren, setDispositionChildren] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+  const [activeLink, setActiveLink] = useState(location.pathname);
+  const [dispositionChildren, setDispositionChildren] = useState([]);
+  const [isDispositionOpen, setIsDispositionOpen] = useState(false); // Track open state for the disposition dropdown
 
+  // Fetch Disposition Children
   useEffect(() => {
-    setActiveLink(location.pathname);
-  }, [location.pathname]);
+    const fetchDispositionChildren = async () => {
+      try {
+        const response = await fetch(`${https}/get_client`);
+        const result = await response.json();
+        if (result?.data?.status && Array.isArray(result.data.data)) {
+          let tempData = result.data.data.map(item => ({ link: `/dispana/${item}`, text: item }));
+          setDispositionChildren(tempData);
+        } else {
+          console.error("Invalid API response structure for disposition children");
+        }
+      } catch (error) {
+        console.error("Error fetching disposition children:", error);
+      }
+    };
 
+    fetchDispositionChildren();
+  }, []); // Dependency array left empty to run only once at mount
 
   const handleItemClick = (link) => {
     setActiveLink(link);
     navigate(link);
   };
 
-  const fetchDispositionChildren = async (lastUpdatedTimestamp) => {
-    try {
-      const response = await fetch(https + '/get_client');
-      const result = await response.json();
-      
-      // Check if the API data has changed based on a timestamp or some other identifier
-      if (result?.data?.status && Array.isArray(result.data.data)) {
-        const newTimestamp = result.data.timestamp; // Replace with the actual timestamp from your API
-  
-        if (newTimestamp !== lastUpdatedTimestamp) {
-          // If the timestamp has changed, update the state with the new data
-          let temp_data = result.data.data;
-          let objectArray = temp_data.map(item => ({ 'link': 'dispana/'+item, 'text': item }));
-          setDispositionChildren(objectArray);
-          setLastUpdatedTimestamp(newTimestamp);
-        }
-      } else {
-        console.error("Invalid API response structure for disposition children");
-      }
-    } catch (error) {
-      console.error("Error fetching disposition children:", error);
-    }
-  };
-  
-  // State variable to track the last updated timestamp
-  const [lastUpdatedTimestamp, setLastUpdatedTimestamp] = useState(null);
-  
-  // State variable to store disposition children
-  // const [dispositionChildren, setDispositionChildren] = useState([]);
-  
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchDispositionChildren(lastUpdatedTimestamp);
-  }, [lastUpdatedTimestamp]);
-  
-  useEffect(() => {
-    console.log("Updated Disposition Children: ", dispositionChildren);
-  }, [dispositionChildren]);
-  
-  // Cleanup interval on component unmount (if needed)
-  useEffect(() => {
-    return () => {
-      // Clear any intervals or timeouts if necessary
-    };
-  }, []);
-  
-  
-  // Cleanup interval on component unmount (if needed)
-  useEffect(() => {
-    return () => {
-      // Clear any intervals or timeouts if necessary
-    };
-  }, []);
-  
-  // You can manually trigger a data refresh by setting dataFetchedOnce to false when you want to update the data
-  // For example, after detecting that the API data has changed, you can call setDataFetchedOnce(false);
-  
-
+  const toggleDispositionOpen = () => setIsDispositionOpen(!isDispositionOpen);
 
   const items = [
     {
@@ -207,9 +136,7 @@ function NavList() {
       link: "/callanalytics",
       hasChildren: true,
       icon: CallIco,
-      childrenLinks: [
-        { text: "Full Transcript", link: "/fulltranscript" },
-      ],
+      childrenLinks: [{ text: "Full Transcript", link: "/fulltranscript" }],
     },
     {
       text: "Log Analytics",
@@ -228,7 +155,7 @@ function NavList() {
       link: "/dispana",
       hasChildren: dispositionChildren.length > 0,
       icon: ReportingIcon,
-      childrenLinks: dispositionChildren, // dynamically add fetched children here
+      childrenLinks: dispositionChildren,
     },
   ];
 
@@ -245,24 +172,13 @@ function NavList() {
             <NavItemWithCollapse
               text={item.text}
               link={item.link}
-              isActive={
-                activeLink === item.link ||
-                item.childrenLinks?.some(
-                  (e) =>
-                    location.pathname === e.link ||
-                    location.pathname.includes(e.link + "/")
-                )
-              }
+              isActive={activeLink.startsWith(item.link)}
               setActive={handleItemClick}
-              isOpen={activeLink === item.link}
-              Icon={item.icon && item.icon}
+              isOpen={item.link === "/dispana" ? isDispositionOpen : activeLink.startsWith(item.link)}
+              onToggle={item.link === "/dispana" ? toggleDispositionOpen : undefined}
+              Icon={item.icon}
             />
-            {(activeLink === item.link ||
-              item.childrenLinks?.some(
-                (e) =>
-                  location.pathname === e.link ||
-                  location.pathname.includes(e.link + "/")
-              )) && (
+            {(item.link === "/dispana" ? isDispositionOpen : activeLink.startsWith(item.link)) && (
               <SubMenu links={item.childrenLinks} activeLink={activeLink} />
             )}
           </React.Fragment>
@@ -273,7 +189,7 @@ function NavList() {
             link={item.link}
             isActive={activeLink === item.link}
             setActive={handleItemClick}
-            Icon={item.icon && item.icon}
+            Icon={item.icon}
           />
         )
       )}
