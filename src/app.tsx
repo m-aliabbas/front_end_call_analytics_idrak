@@ -32,12 +32,8 @@ import FullTranscript from "./pages/Publishers/PublishersGroup/FullTranscript";
 import SplittedTranscript from "./pages/Publishers/PublishersGroup/SplittedTranscript";
 import DispAna from "./components/basicTable/DispAna";
 import ClientsPanel from "./components/basicTable/ClientsPanel";
-// // Rtl Styles
-// import './styles/rtl.scss'
-// // Dark Mode Styles
-// import './styles/dark.scss'
-// // Left Sidebar Dark Mode Styles
-// import './styles/leftSidebarDark.scss'
+import Pannel from "./pages/LoginScreen/Pannel";
+
 
 function App(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,6 +56,14 @@ function App(): JSX.Element {
             <ProtectedRoute user={true}>
                    <ClientsPanel />
             {/* <ManageNumbers /> */}
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/setting",
+          element: (
+            <ProtectedRoute user={true}>
+              <Pannel/>
             </ProtectedRoute>
           ),
         },

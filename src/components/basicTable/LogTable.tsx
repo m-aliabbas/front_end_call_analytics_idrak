@@ -64,7 +64,7 @@ export default function LogTable({
   };
 
   const all = rows.length;
-  const https = "http://213.121.184.27:9000";
+  const https = "http://213.121.184.27";
   const [pharsesData, setpharsesData] = useState(null);
   const [wordData, setWordData] = useState(null);
   const [botData, setBotData] = useState(null);

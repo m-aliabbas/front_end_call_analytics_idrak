@@ -16,7 +16,7 @@ import { Box } from "@mui/material";
 import './Sidebar.scss';
 
 // Assuming your API URL is defined here
-const https = "http://213.121.184.27:9000";
+const https = "http://213.121.184.27";
 
 function NavItemWithoutChildren({ text, link, isActive, setActive, Icon }) {
   return (

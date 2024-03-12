@@ -89,7 +89,7 @@ export default function DispAna({
     const [isFileDownloading, setIsFileDownloading] = useState(false);
 
     // live
-    const https = "http://213.121.184.27:9000";
+    const https = "http://213.121.184.27";
     // local
     // const https = "http://113.203.209.145:9000";
     const [menuOpen, setMenuOpen] = useState(false);
@@ -101,8 +101,9 @@ export default function DispAna({
     const [counterData, setCounterData] = useState(); // State for currently displayed table data
     const [page, setPage] = useState(0); // Current page
     const [rowsPerPage, setRowsPerPage] = useState(20); // Rows per page
-    const [totalCount, setTotalCount] = useState(0); // Total count of rows
+    const isDataAvailable = tableData.length > 0;
 
+    const [totalCount, setTotalCount] = useState(0); // Total count of rows
     const [open, setOpen] = useState(false);
     const [allData, setAllData] = useState([]); // State for all fetched data
     const [uploadedCSV, setUploadedCSV] = useState(null);
@@ -249,100 +250,8 @@ export default function DispAna({
             .catch(error => console.error('Error:', error));
     }, []);
     console.log("clientcampain state......", clientCampaignStates)
-    const fetchTableData = () => {
-        setIsLoading(true);
-        // Calculate start index based on current page and rows per page
-        const startIndex = page * rowsPerPage; // Assuming page starts at 0
-
-        const url = new URL(https + '/get_dispositions');
-        url.searchParams.append('start_index', startIndex);
-        url.searchParams.append('num_rows', rowsPerPage);
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                area_states: selectedStates,
-                dispositions: selectedDisp,
-                area_exclude: isAreaStateActive,
-                disp_exclude: isDispositionActive,
-                file_exclude: isFileActive,
-                med_name: selectedCampaign,
-                file_ids: selectedFiles,
-                client_campaign: selectedClientCampaign,
-                start_date: formattedDateStart,
-                end_date: formattedDateEnd
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                setTableData(data.data.data); // Update table data with response
-                setTotalCount(data.totalCount); // Update total count if provided in response
-                setIsLoading(false);
-
-            })
-            .catch(error => {
-                console.error('Error fetching table data:', error)
-                setIsLoading(false);
-            });
-    };
-
-    useEffect(() => {
-        fetchTableData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, selectedClientCampaign, formattedDateStart, formattedDateEnd]);
-
-    // console.log("start date.....",formattedDateStart)
-    // console.log("end date.....",formattedDateEnd)
-
-    const fetchCounterData = () => {
-        setIsLoading(true);
-        // Calculate start index based on current page and rows per page
-        const startIndex = page * rowsPerPage; // Assuming page starts at 0
-
-        const url = new URL(https + '/get_dispositions_counter');
-        url.searchParams.append('start_index', startIndex);
-        url.searchParams.append('num_rows', rowsPerPage);
-
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                area_states: selectedStates,
-                dispositions: selectedDisp,
-                area_exclude: isAreaStateActive,
-                disp_exclude: isDispositionActive,
-                file_exclude: isFileActive,
-                med_name: selectedCampaign,
-                file_ids: selectedFiles,
-                client_campaign: selectedClientCampaign,
-                start_date: formattedDateStart,
-                end_date: formattedDateEnd
-
-            }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                setCounterData(data.data.data); // Update table data with response
-                setTotalCount(data.totalCount); // Update total count if provided in response
-                setIsLoading(false);
-
-            })
-            .catch(error => {
-                console.error('Error fetching table data:', error)
-                setIsLoading(false);
-            });
-    };
-
-    useEffect(() => {
-        fetchCounterData();
-    }, [page, rowsPerPage, selectedStates, selectedDisp, isAreaStateActive, isDispositionActive, isFileActive, selectedCampaign, selectedFiles, selectedClientCampaign, formattedDateStart, formattedDateEnd]);
 
 
-    // console.log("counterData.................", counterData)
 
 
 
@@ -420,7 +329,7 @@ export default function DispAna({
     // Function to handle the API call for downloading dispositions
     const handleDownload = () => {
         setIsFileDownloading(true); // Start the download process
-        
+
         fetch(https + '/get_download_dispositions_new', {
             method: 'POST',
             headers: {
@@ -442,52 +351,52 @@ export default function DispAna({
                 end_date: formattedDateEnd
             }),
         })
-        .then(response => response.blob()) // Handle response as a blob
-        .then(blob => {
-            // Success path
-            const url = window.URL.createObjectURL(blob);
-            const dateTimeString = getCurrentDateTime(); // Ensure you have this function defined or adjust accordingly
-            const fileName = `call_analytics_${dateTimeString}.zip`; // Use the date-time string in the file name
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName; // Set the file name for download
-            document.body.appendChild(a);
-            a.click();
-            a.remove(); // Clean up
-            window.URL.revokeObjectURL(url); // Release the URL
-            toast.success("Download started!", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
+            .then(response => response.blob()) // Handle response as a blob
+            .then(blob => {
+                // Success path
+                const url = window.URL.createObjectURL(blob);
+                const dateTimeString = getCurrentDateTime(); // Ensure you have this function defined or adjust accordingly
+                const fileName = `call_analytics_${dateTimeString}.zip`; // Use the date-time string in the file name
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName; // Set the file name for download
+                document.body.appendChild(a);
+                a.click();
+                a.remove(); // Clean up
+                window.URL.revokeObjectURL(url); // Release the URL
+                toast.success("Download started!", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                closeDownloadPop();
+            })
+            .catch(error => {
+                // Error path
+                console.error('Error:', error);
+                toast.error("Download failed!", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            })
+            .finally(() => {
+                // This block executes regardless of success or failure
+                setIsFileDownloading(false); // Reset the downloading state
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000); // Optionally reload the page, but consider if this is the best UX
             });
-            closeDownloadPop();
-        })
-        .catch(error => {
-            // Error path
-            console.error('Error:', error);
-            toast.error("Download failed!", {
-                position: "bottom-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        })
-        .finally(() => {
-            // This block executes regardless of success or failure
-            setIsFileDownloading(false); // Reset the downloading state
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000); // Optionally reload the page, but consider if this is the best UX
-        });
     };
-    
+
 
     const handleTagDownload = () => {
         setIsDownloading(true);
@@ -545,6 +454,72 @@ export default function DispAna({
                 setIsDownloading(false);
             });
     };
+
+
+
+    const handleFetchData = () => {
+        setIsLoading(true); // Indicate loading state
+
+        // URL and body setup for fetching table data
+        const fetchTableDataURL = `${https}/get_dispositions`;
+        const tableDataBody = JSON.stringify({
+            area_states: selectedStates,
+            dispositions: selectedDisp,
+            area_exclude: isAreaStateActive,
+            disp_exclude: isDispositionActive,
+            file_exclude: isFileActive,
+            med_name: selectedCampaign,
+            file_ids: selectedFiles,
+            client_campaign: selectedClientCampaign,
+            start_date: formattedDateStart,
+            end_date: formattedDateEnd,
+        });
+
+        // URL and body setup for fetching counter data
+        const fetchCounterDataURL = `${https}/get_dispositions_counter`;
+        const counterDataBody = JSON.stringify({
+            // Assuming the body structure is similar to fetchTableData
+            // Adjust if necessary
+            area_states: selectedStates,
+            dispositions: selectedDisp,
+            area_exclude: isAreaStateActive,
+            disp_exclude: isDispositionActive,
+            file_exclude: isFileActive,
+            med_name: selectedCampaign,
+            file_ids: selectedFiles,
+            client_campaign: selectedClientCampaign,
+            start_date: formattedDateStart,
+            end_date: formattedDateEnd,
+        });
+
+        // Execute fetch for table data
+        fetch(fetchTableDataURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: tableDataBody,
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setTableData(data.data.data); // Assuming the response structure, adjust as needed
+                setTotalCount(data.totalCount); // Adjust according to your actual response
+                // Fetch counter data after successful table data fetch
+                return fetch(fetchCounterDataURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: counterDataBody,
+                });
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                setCounterData(data.data.data); // Adjust according to your actual response structure
+                setIsLoading(false); // Reset loading state
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                setIsLoading(false); // Ensure to reset loading state in case of error
+            });
+    };
+
 
 
 
@@ -904,24 +879,40 @@ export default function DispAna({
 
                                         <div className='count-div-out'>
                                             <div className='count-div'>
-                                                {isLoading ? (
-                                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "30px" }}>
-                                                        <CircularProgress />
-                                                    </div>
+                                                {!isDataAvailable ? (
+                                                    // Show placeholder text while loading or data is not yet available
 
+                                                    <Typography className="heading_log" style={{ textAlign: 'center', height: "30px" }} fontSize="12pt" color={theme.palette.primary.main}>
+                                                       No Data To Display!
+                                                    </Typography>
                                                 ) : (
                                                     <>
-                                                        <span className='count-span-three'>Total calls : </span>
-                                                        <span className='count-span-one'> {counterData !== 0 ? counterData : 0} </span>
-                                                    </>
 
+                                                        {isLoading ? (
+                                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: "30px" }}>
+                                                                <CircularProgress />
+                                                            </div>
+
+                                                        ) : (
+                                                            <>
+                                                                <span className='count-span-three'>Total calls : </span>
+                                                                <span className='count-span-one'> {counterData !== 0 ? counterData : 0} </span>
+                                                            </>
+
+                                                        )}
+                                                    </>
                                                 )}
                                             </div>
                                         </div>
 
+                                        {!isDataAvailable ? (
+                        // Show placeholder text while loading or data is not yet available
 
+                       <></>
+                    ) : (
+                        <>
 
-                                        <Button
+                                        {/* <Button
                                             type="button"
                                             variant="outlined"
                                             className="title-medium"
@@ -946,7 +937,7 @@ export default function DispAna({
                                             disabled={isDownloading} // Disable button while downloading
                                         >
                                             {isDownloading ? 'Downloading...' : 'Download'}
-                                        </Button>
+                                        </Button> */}
 
 
                                         <Button
@@ -954,6 +945,7 @@ export default function DispAna({
                                             variant="outlined"
                                             className="title-medium"
                                             sx={{
+                                                marginBottom: "6px",
                                                 width: "100%",
                                                 padding: "8.5px 16px",
                                                 textTransform: "none",
@@ -974,6 +966,10 @@ export default function DispAna({
                                         >
                                             Download Chunks
                                         </Button>
+                                     </>
+
+)}
+
 
                                         {/* Overlay */}
                                         {isDownloadOpen && <div className="overlay"></div>}
@@ -1015,6 +1011,35 @@ export default function DispAna({
                                                 </div>
                                             </div>
                                         )}
+
+                                        <Button
+                                            type="button"
+                                            variant="outlined"
+                                            className="title-medium"
+                                            sx={{
+
+                                                width: "100%",
+                                                padding: "8.5px 16px",
+                                                textTransform: "none",
+                                                border: "1px solid #E01E26",
+                                                color: "#E01E26",
+                                                marginTop: "2%",
+                                                borderRadius: "5px",
+                                                "&:hover": {
+                                                    color: "#fff",
+                                                    backgroundColor: "var(--redColor)",
+                                                    "& svg": {
+                                                        fill: "#fff",
+                                                    },
+                                                },
+                                            }}
+                                            onClick={handleFetchData}
+                                            disabled={isLoading} // Disable the button while loading
+                                        >
+                                            {isLoading ? 'Processing...' : 'Data Retrieve'}
+                                        </Button>
+
+
                                     </div>
 
 
@@ -1028,60 +1053,71 @@ export default function DispAna({
                     </div>
                 </div>
 
-
                 <TableContainer
                     className={`${className} basic-table ${blackBorder ? "black-border" : ""} ${outlineHeader ? "outline-header" : ""}`}
                     component={Paper}
                 >
 
-                    <Box sx={{ display: "flex", justifyContent: "start", marginBottom: "10px", marginTop: "15px" }}>
-                        <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
-                            Disposition
+                    {!isDataAvailable ? (
+                        // Show placeholder text while loading or data is not yet available
+
+                        <Typography className="heading_log" style={{ textAlign: 'center', margin: '20px' }} fontSize="12pt" color={theme.palette.primary.main}>
+                          No Data To Display!
                         </Typography>
-                    </Box>
-                    <Table aria-label="simple table" sx={{ ...(hideHeader && { thead: { display: "none !important" } }) }}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Caller ID</TableCell>
-                                <TableCell>Disposition</TableCell>
-                                <TableCell>Area State</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        {isLoading ? (
-                            // Display a loading indicator while data is being fetched
-                            <TableRow>
-                                <TableCell colSpan={3} align="center">
-                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                        <CircularProgress />
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            <>
-                                <TableBody>
-                                    {tableData.map((row, index) => (
-                                        <TableRow key={row._id.$oid}>
-                                            <TableCell>{row.caller_id}</TableCell>
-                                            <TableCell>{row.disposition}</TableCell>
-                                            <TableCell>{row.area_state}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </>
-                        )}
-                    </Table>
-                    <TablePagination
-                        rowsPerPageOptions={[20, 50, 100]}
-                        component="div"
-                        count={-1}  // This is where you specify the total number of rows
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    ) : (
+                        // Render the table when data is available and not loading
+                        <>
+                            <Box sx={{ display: "flex", justifyContent: "start", marginBottom: "10px", marginTop: "15px" }}>
+                                <Typography className="headline-medium heading_log" marginBottom="6px" color={theme.palette.primary.main}>
+                                    Disposition
+                                </Typography>
+                            </Box>
+                            <Table aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Caller ID</TableCell>
+                                        <TableCell>Disposition</TableCell>
+                                        <TableCell>Area State</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                {isLoading ? (
+                                    // Display a loading indicator while data is being fetched
+                                    <TableRow>
+                                        <TableCell colSpan={3} align="center">
+                                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <CircularProgress />
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    <>
+                                        <TableBody>
+                                            {tableData.map((row, index) => (
+                                                <TableRow key={row._id.$oid}>
+                                                    <TableCell>{row.caller_id}</TableCell>
+                                                    <TableCell>{row.disposition}</TableCell>
+                                                    <TableCell>{row.area_state}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </>
+                                )}
+                            </Table>
 
-                    />
-
+                            <TablePagination
+                                rowsPerPageOptions={[20, 50, 100]}
+                                component="div"
+                                count={-1}  // Adjust based on actual total count
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </>
+                    )}
                 </TableContainer>
+
+
             </Box >
         </>
     );

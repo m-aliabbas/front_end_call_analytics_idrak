@@ -1,12 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import logo from "../../assets/img/logo.png";
 import "./AuthenticatedRoot.scss";
 import theme from "../../styles/theme";
 import { Box, InputAdornment, TextField, Typography } from "@mui/material";
 import Sidebar from "../sidebar/Sidebar";
-
-
+import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 export default function AuthenticatedRoot() {
   return (
     <>
@@ -24,7 +24,13 @@ export default function AuthenticatedRoot() {
             <img width="165px" src={logo} />
           </div>
          
-          <div className="column space" />
+          <div className="column space " style={{color:"red",  alignItems:"center", display:"flex", justifyContent:"end"}} >
+            
+          <NavLink to="/setting" style={{ marginRight: '10px' }}>
+              <SettingsOutlinedIcon style={{fontSize:"20pt"}} />
+            </NavLink>
+            
+            </div>
         
         </header>
         <div className="main-layout">
