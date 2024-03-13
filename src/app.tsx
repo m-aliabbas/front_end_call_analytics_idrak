@@ -37,12 +37,17 @@ import Pannel from "./pages/LoginScreen/Pannel";
 
 function App(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<boolean>(true);
+  const [user, setUser] = useState<boolean>(false); // Default to false
 
   useEffect(() => {
+    // Check for session value
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    setUser(isLoggedIn);
+console.log( "hello",localStorage.getItem('isLoggedIn'),isLoggedIn)
     const interval = setTimeout(() => {
       setLoading(false);
     }, 3000);
+
     return () => clearInterval(interval);
   }, []);
 

@@ -13,10 +13,9 @@ import { useNavigate } from "react-router-dom";
 function LoginScreen(): JSX.Element {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [remember, setRemember] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -29,42 +28,53 @@ function LoginScreen(): JSX.Element {
 
   const handleLogin = async () => {
     try {
+      const requestBody = {
+        grant_type: "password", // Since the grant type is password
+        username, // User provided username, e.g., "danish@gmail.com"
+        password, // User provided password, e.g., "Cybercity1"
+        scope: "", // If your API requires a scope, specify it here
+        client_id: "", // Specify if required
+        client_secret: "", // Specify if required
+      };
+  
       const response = await fetch("http://213.121.184.27/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded", // Content type for OAuth 2.0 should be x-www-form-urlencoded
         },
-        body: JSON.stringify({ username, password }),
+        body: new URLSearchParams(requestBody).toString(), // Convert the request body object to URL-encoded string
       });
   
+      const data = await response.json(); // Always try to parse JSON to access the response
+  
       if (response.ok) {
-        const data = await response.json();
-        // Check if user is authenticated
         if (data.access_token) {
-          // Proceed with the login
-          if (remember) {
+          
             localStorage.setItem("accessToken", data.access_token);
-            localStorage.setItem("userId", data.user_id);
-          }
-          // Set login status to true
+            localStorage.setItem("userId", data.user_id); // Adjust based on actual response
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', 'user'); // or 'User' depending on the role
+
+      
           setLoginStatus(true);
-          // Navigate to the next page or handle success
           navigate("/");
         } else {
-          // Handle authentication failure
-          setError("Authentication failed. Please check your credentials.");
+          setError("Unexpected error. Please try again later.");
         }
       } else if (response.status === 401) {
-        // Handle unauthorized access
         setError("Unauthorized access. Please check your credentials.");
+      } else if (response.status === 422) {
+        setError(data.message || "Validation error. Please check your input.");
       } else {
-        throw new Error("Login failed");
+        setError("An error occurred during login. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setError("An error occurred during login.");
+      setError("An error occurred during login. Please try again.");
     }
   };
+  
+  
   
 
 

@@ -125,6 +125,8 @@ export default function Panel(
 }, []);
 
 
+// Admin Api
+
 const handleSureButtonClick = (user_id) => {
   fetch(`http://213.121.184.27/user_admin/${user_id}`, {
     method: 'PUT',
