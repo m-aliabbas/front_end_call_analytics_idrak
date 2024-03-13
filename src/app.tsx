@@ -37,6 +37,7 @@ import Pannel from "./pages/LoginScreen/Pannel";
 
 function App(): JSX.Element {
   const [loading, setLoading] = useState<boolean>(true);
+  const [user, setUser] = useState<boolean>(true);
 
   useEffect(() => {
     const interval = setTimeout(() => {
@@ -44,6 +45,8 @@ function App(): JSX.Element {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+ 
 
   const router = createBrowserRouter([
     {
@@ -53,16 +56,15 @@ function App(): JSX.Element {
         {
           path: "/",
           element: (
-            <ProtectedRoute user={true}>
-                   <ClientsPanel />
-            {/* <ManageNumbers /> */}
+            <ProtectedRoute user={user}>
+              <ClientsPanel />
             </ProtectedRoute>
           ),
         },
         {
           path: "/setting",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <Pannel/>
             </ProtectedRoute>
           ),
@@ -70,7 +72,7 @@ function App(): JSX.Element {
         {
           path: "/loganalytics",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <CampaignsPage />
             </ProtectedRoute>
           ),
@@ -78,7 +80,7 @@ function App(): JSX.Element {
         {
           path: "/campaigns/create",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <CreateCampaign />
             </ProtectedRoute>
           ),
@@ -86,7 +88,7 @@ function App(): JSX.Element {
         {
           path: "/callanalytics",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManagePublishers />
             </ProtectedRoute>
           ),
@@ -94,7 +96,7 @@ function App(): JSX.Element {
         {
           path: "/dispana",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ClientsPanel />
             </ProtectedRoute>
           ),
@@ -102,14 +104,15 @@ function App(): JSX.Element {
         {
           path: "/dispana/:links/*",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <DispAna/>
             </ProtectedRoute>
           ),
-        },{
+        },
+        {
           path: "/add/:id",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <AddPublisher />
             </ProtectedRoute>
           ),
@@ -117,7 +120,7 @@ function App(): JSX.Element {
         {
           path: "/publishers-group",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <PublishersGroup />
             </ProtectedRoute>
           ),
@@ -125,7 +128,7 @@ function App(): JSX.Element {
         {
           path: "/fulltranscript",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <FullTranscript/>
             </ProtectedRoute>
           ),
@@ -133,7 +136,7 @@ function App(): JSX.Element {
         {
           path: "/splittedtranscript",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <SplittedTranscript/>
             </ProtectedRoute>
           ),
@@ -141,7 +144,7 @@ function App(): JSX.Element {
         {
           path: "/manage-targets",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManageTargets />
             </ProtectedRoute>
           ),
@@ -149,7 +152,7 @@ function App(): JSX.Element {
         {
           path: "/buyer-groups",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <BuyerGroups />
             </ProtectedRoute>
           ),
@@ -157,7 +160,7 @@ function App(): JSX.Element {
         {
           path: "/manage-targets/add",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <AddTargetsPage />
             </ProtectedRoute>
           ),
@@ -165,7 +168,7 @@ function App(): JSX.Element {
         {
           path: "/manage-buyers",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManageBuyers />
             </ProtectedRoute>
           ),
@@ -173,7 +176,7 @@ function App(): JSX.Element {
         {
           path: "/manage-buyers/add",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <CreateBuyer />
             </ProtectedRoute>
           ),
@@ -181,7 +184,7 @@ function App(): JSX.Element {
         {
           path: "/logstats",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManageNumbers />
             </ProtectedRoute>
           ),
@@ -189,7 +192,7 @@ function App(): JSX.Element {
         {
           path: "/manage-dnc",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManageDNC />
             </ProtectedRoute>
           ),
@@ -197,7 +200,7 @@ function App(): JSX.Element {
         {
           path: "/profile-settings",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ProfileSettings />
             </ProtectedRoute>
           ),
@@ -205,7 +208,7 @@ function App(): JSX.Element {
         {
           path: "/manage-users",
           element: (
-            <ProtectedRoute user={true}>
+            <ProtectedRoute user={user}>
               <ManageUsers />
             </ProtectedRoute>
           ),
@@ -230,7 +233,9 @@ function App(): JSX.Element {
 
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <RouterProvider router={router}>
+      
+      </RouterProvider>
     </ThemeProvider>
   );
 }

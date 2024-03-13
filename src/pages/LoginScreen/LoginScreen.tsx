@@ -1,27 +1,11 @@
+import React, { useState, ChangeEvent } from "react";
 import {
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  InputBase,
-  Link,
-  TextField,
   Typography,
-  styled,
+  Grid,
 } from "@mui/material";
-import React, {
-  useState,
-  useEffect,
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-} from "react";
 import theme from "../../styles/theme";
-
 import "./LoginScreen.scss";
 import CustomTextField from "../../components/customTextField/CustomTextField";
 import { useNavigate } from "react-router-dom";
@@ -29,17 +13,62 @@ import { useNavigate } from "react-router-dom";
 function LoginScreen(): JSX.Element {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState<String>("");
-  const [password, setPassword] = useState<String>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [remember, setRemember] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
-    setFieldValue: Dispatch<SetStateAction<string>>
+    setValue: Function
   ) => {
-    setFieldValue(event.target.value);
+    setValue(event.target.value);
   };
+  const [loginStatus, setLoginStatus] = useState(false);
 
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://213.121.184.27/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Check if user is authenticated
+        if (data.access_token) {
+          // Proceed with the login
+          if (remember) {
+            localStorage.setItem("accessToken", data.access_token);
+            localStorage.setItem("userId", data.user_id);
+          }
+          // Set login status to true
+          setLoginStatus(true);
+          // Navigate to the next page or handle success
+          navigate("/");
+        } else {
+          // Handle authentication failure
+          setError("Authentication failed. Please check your credentials.");
+        }
+      } else if (response.status === 401) {
+        // Handle unauthorized access
+        setError("Unauthorized access. Please check your credentials.");
+      } else {
+        throw new Error("Login failed");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError("An error occurred during login.");
+    }
+  };
+  
+
+
+  
   return (
     <Box
       className="login"
@@ -51,7 +80,6 @@ function LoginScreen(): JSX.Element {
         height: "100%",
         flexGrow: 1,
         backgroundColor: "white",
-            
       }}
     >
       <div className="left">
@@ -69,10 +97,10 @@ function LoginScreen(): JSX.Element {
           </Typography>
     
           <CustomTextField
-            label="Email"
-            type="email"
-            onChange={(event) => handleInputChange(event, setEmail)}
-            value={email}
+            label="Username"
+            type="text"
+            onChange={(event) => handleInputChange(event, setUsername)}
+            value={username}
           />
           <CustomTextField
             label="Password"
@@ -80,11 +108,12 @@ function LoginScreen(): JSX.Element {
             onChange={(event) => handleInputChange(event, setPassword)}
             value={password}
           />
-
+    
+          {error && <Typography color="error">{error}</Typography>}
     
           <Box sx={{ width: "100%" }}>
             <Button
-              type="submit"
+              onClick={handleLogin}
               fullWidth
               variant="contained"
               disableElevation
@@ -111,10 +140,6 @@ function LoginScreen(): JSX.Element {
           </Box>
         </div>
       </div>
-
-
-
-
     </Box>
   );
 }

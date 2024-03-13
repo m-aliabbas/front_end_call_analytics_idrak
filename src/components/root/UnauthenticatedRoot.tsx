@@ -18,7 +18,9 @@ export default function UnAuthenticatedRoot() {
         }}
       >
         <header>
-          <img className="mr-48" src={logo} />
+        <div className="column flex flex-col justify-center">
+            <img width="165px" src={logo} />
+          </div>
           <Typography
             variant="h1"
             fontFamily="Circle"
