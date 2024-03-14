@@ -53,7 +53,7 @@ function LoginScreen(): JSX.Element {
             localStorage.setItem("accessToken", data.access_token);
             localStorage.setItem("userId", data.user_id); // Adjust based on actual response
             localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('userRole', 'user'); // or 'User' depending on the role
+         
 
       
           setLoginStatus(true);
