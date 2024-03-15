@@ -882,8 +882,8 @@ export default function DispAna({
                                                 {!isDataAvailable ? (
                                                     // Show placeholder text while loading or data is not yet available
 
-                                                    <Typography className="heading_log" style={{ textAlign: 'center', height: "30px" }} fontSize="12pt" color={theme.palette.primary.main}>
-                                                       No Data To Display!
+                                                    <Typography className="heading_log" style={{ textAlign: 'center' }} fontSize="9pt" color={theme.palette.primary.main}>
+                                                       No Data to Display! Please Click on Retrieve Data to retrieve.
                                                     </Typography>
                                                 ) : (
                                                     <>
@@ -1036,7 +1036,7 @@ export default function DispAna({
                                             onClick={handleFetchData}
                                             disabled={isLoading} // Disable the button while loading
                                         >
-                                            {isLoading ? 'Processing...' : 'Data Retrieve'}
+                                            {isLoading ? 'Processing...' : 'Retrieve Data'}
                                         </Button>
 
 
@@ -1061,8 +1061,8 @@ export default function DispAna({
                     {!isDataAvailable ? (
                         // Show placeholder text while loading or data is not yet available
 
-                        <Typography className="heading_log" style={{ textAlign: 'center', margin: '20px' }} fontSize="12pt" color={theme.palette.primary.main}>
-                          No Data To Display!
+                        <Typography className="heading_log" style={{ textAlign: 'center', margin: '20px' }} fontSize="9pt" color={theme.palette.primary.main}>
+                        No Data to Display! Please Click on Retrieve Data to retrieve.
                         </Typography>
                     ) : (
                         // Render the table when data is available and not loading

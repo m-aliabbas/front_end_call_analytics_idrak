@@ -18,7 +18,9 @@ export default function AuthenticatedRoot() {
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
     navigate('/login');
+    window.location.reload();
     setOpenLogoutDialog(false);
   };
 

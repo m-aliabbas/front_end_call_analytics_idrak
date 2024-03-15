@@ -58,6 +58,7 @@ function LoginScreen(): JSX.Element {
       
           setLoginStatus(true);
           navigate("/");
+          window.location.reload();
         } else {
           setError("Unexpected error. Please try again later.");
         }
